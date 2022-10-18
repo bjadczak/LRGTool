@@ -1,4 +1,4 @@
-# LinkedInAPIApp
+# LRG - LinkedIn Resume Generation Tool
 
 This application will use LinkedIn API to generate user **CV** in pdf format. With option to add additional input, user can overwrite some data, or decide to omit it. LinkedIn API lets us fetch data such as: 
 - Certifications
