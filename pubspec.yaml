@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   pdf: ^3.8.4
   printing: ^5.9.3
+  linkedin_login: ^2.2.1
 
 dev_dependencies:
   flutter_test:
