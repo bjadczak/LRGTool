@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:lrgtool/linkedin_data_structs.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -12,14 +13,21 @@ import 'package:flutter_archive/flutter_archive.dart';
 import 'load_data_screen.dart';
 
 void main() {
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     title: 'Navigation Basics',
-    home: FirstRoute(),
+    home: MainScreen(),
   ));
 }
 
-class FirstRoute extends StatelessWidget {
-  const FirstRoute({super.key});
+class MainScreen extends StatefulWidget {
+  MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  CvData? _cvData;
 
   @override
   Widget build(BuildContext context) {
@@ -34,27 +42,37 @@ class FirstRoute extends StatelessWidget {
             ElevatedButton(
               child: const Text('Load data from Zip'),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoadDataFromZip()),
-                );
+                launchLoadingFromZip(context);
               },
             ),
             ElevatedButton(
               child: const Text('Test PDF screen'),
               onPressed: () {
-                Navigator.push(
+                _cvData = Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
                           const MyHomePage(title: 'Flutter Demo Home Page')),
-                );
+                ) as CvData?;
               },
             )
           ],
         ),
       ),
     );
+  }
+
+  Future<void> launchLoadingFromZip(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoadDataFromZip(_cvData)),
+    ) as CvData?;
+
+    if (!mounted) return;
+
+    setState(() {
+      _cvData = result;
+    });
   }
 }
 

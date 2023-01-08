@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -9,17 +7,27 @@ import 'package:flutter_archive/flutter_archive.dart';
 
 import 'linkedin_data_structs.dart';
 
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
 class LoadDataFromZip extends StatefulWidget {
-  LoadDataFromZip({super.key});
+  CvData? _cvData;
+
+  LoadDataFromZip(CvData? cvData, {super.key}) : _cvData = cvData;
 
   @override
-  State<LoadDataFromZip> createState() => _LoadDataFromZipState();
+  State<LoadDataFromZip> createState() => _LoadDataFromZipState(_cvData);
 }
 
 class _LoadDataFromZipState extends State<LoadDataFromZip> {
   final _appDataDir = Directory.systemTemp;
 
   List<ListItem> items = [];
+  bool _showClear = false;
+  CvData? _cvData;
+
+  _LoadDataFromZipState(cvData) : _cvData = cvData {
+    items = _cvData?.getListOfData() ?? [];
+  }
 
   Future<void> _pickZipDataFile(context) async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -36,19 +44,12 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
         if (unpackedFiles != null) {
           var data = await CvData.create(unpackedFiles);
           setState(() {
+            _cvData = data;
             items = data.getListOfData();
           });
         } else {
-          final snackBar = SnackBar(
-            content: const Text('Finvalid file format'),
-            action: SnackBarAction(
-              label: 'Clear data',
-              onPressed: () {
-                setState(() {
-                  items = [];
-                });
-              },
-            ),
+          const snackBar = SnackBar(
+            content: Text('Finvalid file format'),
           );
 
           // Find the ScaffoldMessenger in the widget tree
@@ -108,16 +109,15 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Load data from zip file'),
+        leading: BackButton(
+          onPressed: () => Navigator.pop(context, _cvData),
+        ),
       ),
       body: Center(
         child: ListView.builder(
-          // Let the ListView know how many items it needs to build.
           itemCount: items.length,
-          // Provide a builder function. This is where the magic happens.
-          // Convert each item into a widget based on the type of item it is.
           itemBuilder: (context, index) {
             final item = items[index];
-
             return ListTile(
               title: item.buildTitle(context),
               subtitle: item.buildSubtitle(context),
@@ -125,7 +125,7 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
           },
         ),
       ),
-      floatingActionButton: loadZipFileButton(context),
+      floatingActionButton: _getFAB(context),
     );
   }
 
@@ -136,6 +136,44 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
       },
       icon: const Icon(Icons.file_open),
       label: const Text('Open Zip File'),
+    );
+  }
+
+  Widget _getFAB(context) {
+    return SpeedDial(
+      animatedIcon: AnimatedIcons.menu_close,
+      backgroundColor: Theme.of(context).primaryColor,
+      animatedIconTheme: const IconThemeData(color: Colors.white),
+      visible: true,
+      curve: Curves.bounceIn,
+      children: [
+        SpeedDialChild(
+          foregroundColor: Colors.white,
+          backgroundColor: Theme.of(context).primaryColor,
+          labelStyle: const TextStyle(color: Colors.white),
+          labelBackgroundColor: Theme.of(context).primaryColor,
+          child: const Icon(Icons.file_open),
+          onTap: () {
+            _pickZipDataFile(context);
+          },
+          label: 'Open Zip File',
+        ),
+        // FAB 2
+        SpeedDialChild(
+          foregroundColor: Colors.white,
+          backgroundColor: Theme.of(context).primaryColor,
+          labelStyle: const TextStyle(color: Colors.white),
+          labelBackgroundColor: Theme.of(context).primaryColor,
+          child: const Icon(Icons.clear),
+          onTap: () {
+            setState(() {
+              items = [];
+              _cvData = null;
+            });
+          },
+          label: 'Clear Data',
+        )
+      ],
     );
   }
 }
