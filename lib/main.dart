@@ -5,11 +5,11 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-import 'package:file_picker/file_picker.dart';
-
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_archive/flutter_archive.dart';
+
+import 'load_data_screen.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -45,7 +45,7 @@ class FirstRoute extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ThirdRoute()),
+                  MaterialPageRoute(builder: (context) => ThirdRoute()),
                 );
               },
             ),
@@ -91,53 +91,6 @@ class SecondRoute extends StatelessWidget {
             Navigator.pop(context);
           },
           child: const Text('Go back!'),
-        ),
-      ),
-    );
-  }
-}
-
-class ThirdRoute extends StatelessWidget {
-  const ThirdRoute({super.key});
-  void _pickFile() async {
-    // opens storage to pick files and the picked file or files
-    // are assigned into result and if no file is chosen result is null.
-    // you can also toggle "allowMultiple" true or false depending on your need
-    final result = await FilePicker.platform.pickFiles(allowMultiple: false);
-
-    // if no file is picked
-    if (result == null) return;
-
-    // we will log the name, size and path of the
-    // first picked file (if multiple are selected)
-    print(result.files.first.name);
-    print(result.files.first.size);
-    print(result.files.first.path);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Third Route'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                _pickFile();
-              },
-              child: const Text('Open File'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Go back!'),
-            ),
-          ],
         ),
       ),
     );
