@@ -2,6 +2,8 @@ import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 class PositionData {
   final String companyName;
   final String title;
@@ -26,13 +28,25 @@ class PositionData {
     DateTime? finish;
 
     try {
-      start = DateFormat("MMM yyyy").parse(startedOn);
-    } on FormatException catch (_) {
+      if (startedOn.length > 4) {
+        start = DateFormat("MMM yyyy").parse(startedOn);
+      } else {
+        start = DateFormat("yyyy").parse(startedOn);
+      }
+    } on FormatException catch (e, stacktrace) {
+      print('Exception: ' + e.toString());
+      print('Stacktrace: ' + stacktrace.toString());
       start = null;
     }
     try {
-      finish = DateFormat("MMM yyyy").parse(finishedOn);
-    } on FormatException catch (_) {
+      if (finishedOn.length > 4) {
+        finish = DateFormat("MMM yyyy").parse(finishedOn);
+      } else if (finishedOn.length > 0) {
+        finish = DateFormat("yyyy").parse(finishedOn);
+      }
+    } on FormatException catch (e, stacktrace) {
+      print('Exception: ' + e.toString());
+      print('Stacktrace: ' + stacktrace.toString());
       finish = null;
     }
     return PositionData._(
@@ -48,23 +62,23 @@ class PositionData {
 class ProfileData {
   final String firstName;
   final String secondName;
-  final String headLine;
+  final String headline;
   final String industry;
   final String location;
   final String email;
 
-  ProfileData(this.firstName, this.secondName, this.headLine, this.industry,
+  ProfileData(this.firstName, this.secondName, this.headline, this.industry,
       this.location, this.email);
   ProfileData.empty()
       : firstName = "",
         secondName = "",
-        headLine = "",
+        headline = "",
         industry = "",
         location = "",
         email = "";
   void debugPrint() {
     print(
-        "Profile of ${firstName} ${secondName}. ${headLine} ${industry} ${location}. Email: ${email}");
+        "Profile of ${firstName} ${secondName}. ${headline} ${industry} ${location}. Email: ${email}");
   }
 }
 
@@ -88,13 +102,25 @@ class EducationData {
     DateTime? finish;
 
     try {
-      start = DateFormat("yyyy").parse(startedOn);
-    } on FormatException catch (_) {
+      if (startedOn.length > 4) {
+        start = DateFormat("MMM yyyy").parse(startedOn);
+      } else {
+        start = DateFormat("yyyy").parse(startedOn);
+      }
+    } on FormatException catch (e, stacktrace) {
+      print('Exception: ' + e.toString());
+      print('Stacktrace: ' + stacktrace.toString());
       start = null;
     }
     try {
-      finish = DateFormat("yyyy").parse(finishedOn);
-    } on FormatException catch (_) {
+      if (finishedOn.length > 4) {
+        finish = DateFormat("MMM yyyy").parse(finishedOn);
+      } else if (finishedOn.length > 0) {
+        finish = DateFormat("yyyy").parse(finishedOn);
+      }
+    } on FormatException catch (e, stacktrace) {
+      print('Exception: ' + e.toString());
+      print('Stacktrace: ' + stacktrace.toString());
       finish = null;
     }
 
@@ -133,6 +159,12 @@ class CvData {
   late final ProfileData profileData;
 
   CvData._(this.positions, this.education, this.skills, this.profileData);
+
+  CvData.empty()
+      : positions = [],
+        education = [],
+        skills = [],
+        profileData = ProfileData.empty();
 
   static Future<CvData> create(Directory unpackedCsvFiles) async {
     var positions = await _parsePositions(unpackedCsvFiles);
@@ -175,7 +207,10 @@ class CvData {
         outData
             .add(PositionData(row[0], row[1], row[2], row[3], row[4], row[5]));
       }
-    } on Exception catch (_) {}
+    } on Exception catch (e, stacktrace) {
+      print('Exception: ' + e.toString());
+      print('Stacktrace: ' + stacktrace.toString());
+    }
 
     return outData;
   }
@@ -202,12 +237,16 @@ class CvData {
           (element) => element[1] == "Yes" && element[2] == "Yes",
           orElse: () => [""],
         )[0];
-      } on Exception catch (_) {
+      } on Exception catch (e, stacktrace) {
+        print('Exception: ' + e.toString());
+        print('Stacktrace: ' + stacktrace.toString());
         email = "";
       }
 
       outData = ProfileData(row[0], row[1], row[5], row[7], row[9], email);
-    } on Exception catch (_) {
+    } on Exception catch (e, stacktrace) {
+      print('Exception: ' + e.toString());
+      print('Stacktrace: ' + stacktrace.toString());
       outData = ProfileData.empty();
     }
 
@@ -232,7 +271,10 @@ class CvData {
           in rowsAsListOfValues.getRange(1, rowsAsListOfValues.length)) {
         outData.add(EducationData(row[0], row[1], row[2], row[4]));
       }
-    } on Exception catch (_) {}
+    } on Exception catch (e, stacktrace) {
+      print('Exception: ' + e.toString());
+      print('Stacktrace: ' + stacktrace.toString());
+    }
 
     return outData;
   }
@@ -249,24 +291,30 @@ class CvData {
     List<SkillData> outData = [];
 
     try {
-      List<List<dynamic>> rowsAsListOfValuesSkills =
-          await _getListFromCSV(skillsCSV);
-      List<List<dynamic>> rowsAsListOfValuesEndorsment =
-          await _getListFromCSV(endorsementCSV);
-
-      // First line is an header
-      for (var row in rowsAsListOfValuesSkills.getRange(
-          1, rowsAsListOfValuesSkills.length)) {
-        outData.add(SkillData(row[0]));
-      }
-      for (var row in rowsAsListOfValuesEndorsment.getRange(
-          1, rowsAsListOfValuesEndorsment.length)) {
-        SkillData skill = SkillData(row[1]);
-        if (row[4] == "ACCEPTED" && !outData.contains(skill)) {
-          outData.add(skill);
+      List<List<dynamic>> rowsAsListOfValuesSkills = [];
+      List<List<dynamic>> rowsAsListOfValuesEndorsment = [];
+      if ((await skillsCSV.exists())) {
+        rowsAsListOfValuesSkills = await _getListFromCSV(skillsCSV);
+        // First line is an header
+        for (var row in rowsAsListOfValuesSkills.getRange(
+            1, rowsAsListOfValuesSkills.length)) {
+          outData.add(SkillData(row[0]));
         }
       }
-    } on Exception catch (_) {}
+      if ((await endorsementCSV.exists())) {
+        rowsAsListOfValuesEndorsment = await _getListFromCSV(endorsementCSV);
+        for (var row in rowsAsListOfValuesEndorsment.getRange(
+            1, rowsAsListOfValuesEndorsment.length)) {
+          SkillData skill = SkillData(row[1]);
+          if (row[4] == "ACCEPTED" && !outData.contains(skill)) {
+            outData.add(skill);
+          }
+        }
+      }
+    } on Exception catch (e, stacktrace) {
+      print('Exception: ' + e.toString());
+      print('Stacktrace: ' + stacktrace.toString());
+    }
 
     return outData;
   }
@@ -275,4 +323,123 @@ class CvData {
     return const CsvToListConverter(eol: "\n", shouldParseNumbers: false)
         .convert(await csvFile.readAsString());
   }
+
+  List<ListItem> getListOfData() {
+    List<ListItem> items = [];
+
+    // Add profile data
+    items.add(HeadingItem("Profile data"));
+    items.add(MessageItem(
+        "${profileData.firstName} ${profileData.secondName}", "Name"));
+    items.add(MessageItem(profileData.email, "e-mail"));
+    items.add(MessageItem(profileData.headline, "Profile headline"));
+    items.add(MessageItem(profileData.industry, "Industry"));
+    items.add(MessageItem(profileData.location, "Location"));
+
+    // Add Positions
+    items.add(HeadingItem("Past positions"));
+    for (var position in positions) {
+      items.add(SubHeadingItem(position.companyName, "Company"));
+      items.add(MessageItem(position.title, "Title"));
+      if (position.description.isNotEmpty) {
+        items.add(MessageItem(position.description, "Description"));
+      }
+      if (position.location.isNotEmpty) {
+        items.add(MessageItem(position.location, "Location"));
+      }
+      if (position.startedOn != null) {
+        items.add(MessageItem(
+            "${position.startedOn?.year}.${position.startedOn?.month}",
+            "Started on"));
+      }
+      if (position.finishedOn != null) {
+        items.add(MessageItem(
+            "${position.finishedOn?.year}.${position.finishedOn?.month}",
+            "Finished on"));
+      }
+    }
+
+    // Add Education
+    items.add(HeadingItem("Education"));
+    for (var edu in education) {
+      items.add(SubHeadingItem(edu.schoolName, "School name"));
+      items.add(MessageItem(edu.degree, "Degree"));
+      if (edu.startedOn != null) {
+        items.add(MessageItem("${edu.startedOn?.year}", "Started on"));
+      }
+      if (edu.finishedOn != null) {
+        items.add(MessageItem(
+            "${edu.finishedOn?.year}",
+            (edu.finishedOn?.year ?? (DateTime.now().year + 1)) >
+                    DateTime.now().year
+                ? "Will finish on"
+                : "Finished on"));
+      }
+    }
+
+    // Add Skills
+    items.add(HeadingItem("Skills"));
+    for (var skill in skills) {
+      items.add(MessageItem(skill.skill, "Skill"));
+    }
+
+    return items;
+  }
+}
+
+abstract class ListItem {
+  /// The title line to show in a list item.
+  Widget buildTitle(BuildContext context);
+
+  /// The subtitle line, if any, to show in a list item.
+  Widget buildSubtitle(BuildContext context);
+}
+
+class HeadingItem implements ListItem {
+  final String heading;
+
+  HeadingItem(this.heading);
+
+  @override
+  Widget buildTitle(BuildContext context) {
+    return Text(
+      heading,
+      style: Theme.of(context).textTheme.headline4,
+    );
+  }
+
+  @override
+  Widget buildSubtitle(BuildContext context) => const SizedBox.shrink();
+}
+
+class SubHeadingItem implements ListItem {
+  final String sender;
+  final String body;
+
+  SubHeadingItem(this.sender, this.body);
+
+  @override
+  Widget buildTitle(BuildContext context) {
+    return Text(
+      sender,
+      style: Theme.of(context).textTheme.headline5,
+    );
+  }
+
+  @override
+  Widget buildSubtitle(BuildContext context) => Text(body);
+}
+
+/// A ListItem that contains data to display a message.
+class MessageItem implements ListItem {
+  final String sender;
+  final String body;
+
+  MessageItem(this.sender, this.body);
+
+  @override
+  Widget buildTitle(BuildContext context) => Text(sender);
+
+  @override
+  Widget buildSubtitle(BuildContext context) => Text(body);
 }
