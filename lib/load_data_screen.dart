@@ -7,6 +7,10 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 
+import 'package:csv/csv.dart';
+
+import 'linkedin_data_structs.dart';
+
 class ThirdRoute extends StatelessWidget {
   ThirdRoute({super.key});
 
@@ -28,9 +32,16 @@ class ThirdRoute extends StatelessWidget {
         File file = File(zipFilePath);
         var tmp = await _getFilesFromZip(file);
         if (tmp != null) {
-          final String endor = File("${tmp.path}/Endorsement_Received_Info.csv")
-              .readAsStringSync();
+          final String endor =
+              File("${tmp.path}/Positions.csv").readAsStringSync();
           print(endor);
+          List<List<dynamic>> rowsAsListOfValues =
+              const CsvToListConverter(eol: "\n").convert(endor);
+          for (var row in rowsAsListOfValues) {
+            final PositionsData data =
+                PositionsData(row[0], row[1], row[2], row[3], row[4], row[5]);
+            data.debugPrint();
+          }
         }
       }
     }
