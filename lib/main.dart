@@ -48,12 +48,12 @@ class _MainScreenState extends State<MainScreen> {
             ElevatedButton(
               child: const Text('Test PDF screen'),
               onPressed: () {
-                _cvData = Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
                           const MyHomePage(title: 'Flutter Demo Home Page')),
-                ) as CvData?;
+                );
               },
             )
           ],

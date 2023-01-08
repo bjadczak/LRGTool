@@ -27,6 +27,7 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
 
   _LoadDataFromZipState(cvData) : _cvData = cvData {
     items = _cvData?.getListOfData() ?? [];
+    _showClear = cvData != null;
   }
 
   Future<void> _pickZipDataFile(context) async {
@@ -46,6 +47,7 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
           setState(() {
             _cvData = data;
             items = data.getListOfData();
+            _showClear = true;
           });
         } else {
           const snackBar = SnackBar(
@@ -165,10 +167,12 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
           labelStyle: const TextStyle(color: Colors.white),
           labelBackgroundColor: Theme.of(context).primaryColor,
           child: const Icon(Icons.clear),
+          visible: _showClear,
           onTap: () {
             setState(() {
               items = [];
               _cvData = null;
+              _showClear = false;
             });
           },
           label: 'Clear Data',
