@@ -21,7 +21,7 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
 
   List<ListItem> items = [];
 
-  Future<void> _pickZipDataFile() async {
+  Future<void> _pickZipDataFile(context) async {
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
       type: FileType.custom,
@@ -38,6 +38,22 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
           setState(() {
             items = data.getListOfData();
           });
+        } else {
+          final snackBar = SnackBar(
+            content: const Text('Finvalid file format'),
+            action: SnackBarAction(
+              label: 'Clear data',
+              onPressed: () {
+                setState(() {
+                  items = [];
+                });
+              },
+            ),
+          );
+
+          // Find the ScaffoldMessenger in the widget tree
+          // and use it to show a SnackBar.
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       }
     }
@@ -56,20 +72,9 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
 
     try {
       extractFutures.add(ZipFile.extractToDirectory(
-          zipFile: myZipData,
-          destinationDir: destinationDir,
-          onExtracting: (zipEntry, progress) {
-            print('progress: ${progress.toStringAsFixed(1)}%');
-            print('name: ${zipEntry.name}');
-            print('isDirectory: ${zipEntry.isDirectory}');
-            print(
-                'modificationDate: ${zipEntry.modificationDate?.toLocal().toIso8601String()}');
-            print('uncompressedSize: ${zipEntry.uncompressedSize}');
-            print('compressedSize: ${zipEntry.compressedSize}');
-            print('compressionMethod: ${zipEntry.compressionMethod}');
-            print('crc: ${zipEntry.crc}');
-            return ZipFileOperation.includeItem;
-          }));
+        zipFile: myZipData,
+        destinationDir: destinationDir,
+      ));
 
       await Future.wait<void>(extractFutures);
     } on PlatformException catch (e, stacktrace) {
@@ -120,14 +125,14 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
           },
         ),
       ),
-      floatingActionButton: loadZipFileButton(),
+      floatingActionButton: loadZipFileButton(context),
     );
   }
 
-  FloatingActionButton loadZipFileButton() {
+  FloatingActionButton loadZipFileButton(context) {
     return FloatingActionButton.extended(
       onPressed: () {
-        _pickZipDataFile();
+        _pickZipDataFile(context);
       },
       icon: const Icon(Icons.file_open),
       label: const Text('Open Zip File'),
