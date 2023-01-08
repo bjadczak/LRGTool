@@ -38,10 +38,18 @@ class ThirdRoute extends StatelessWidget {
   Future<void> _parseLinkedInData(Directory unpackedCsvFiles) async {
     var postions = await _parsePositions(unpackedCsvFiles);
     var profile = await _parseProfile(unpackedCsvFiles);
+    var educations = await _parseEducation(unpackedCsvFiles);
+    var skills = await _parseSkills(unpackedCsvFiles);
 
     profile.debugPrint();
     for (var position in postions) {
       position.debugPrint();
+    }
+    for (var education in educations) {
+      education.debugPrint();
+    }
+    for (var skill in skills) {
+      skill.debugPrint();
     }
   }
 
@@ -90,8 +98,64 @@ class ThirdRoute extends StatelessWidget {
     return outData;
   }
 
+  Future<List<EducationData>> _parseEducation(
+      Directory unpackedCsvFiles) async {
+    File educationCSV = File("${unpackedCsvFiles.path}/Education.csv");
+
+    if (!(await educationCSV.exists())) {
+      return [];
+    }
+    List<EducationData> outData = [];
+
+    try {
+      List<List<dynamic>> rowsAsListOfValues =
+          await _getListFromCSV(educationCSV);
+
+      // First line is an header
+      for (var row
+          in rowsAsListOfValues.getRange(1, rowsAsListOfValues.length)) {
+        outData.add(EducationData(row[0], row[1], row[2], row[4]));
+      }
+    } on Exception catch (_) {}
+
+    return outData;
+  }
+
+  Future<List<SkillData>> _parseSkills(Directory unpackedCsvFiles) async {
+    File skillsCSV = File("${unpackedCsvFiles.path}/Skills.csv");
+    File endorsementCSV =
+        File("${unpackedCsvFiles.path}/Endorsement_Received_Info.csv");
+
+    if (!(await skillsCSV.exists()) && !(await endorsementCSV.exists())) {
+      return [];
+    }
+    List<SkillData> outData = [];
+
+    try {
+      List<List<dynamic>> rowsAsListOfValuesSkills =
+          await _getListFromCSV(skillsCSV);
+      List<List<dynamic>> rowsAsListOfValuesEndorsment =
+          await _getListFromCSV(endorsementCSV);
+
+      // First line is an header
+      for (var row in rowsAsListOfValuesSkills.getRange(
+          1, rowsAsListOfValuesSkills.length)) {
+        outData.add(SkillData(row[0]));
+      }
+      for (var row in rowsAsListOfValuesEndorsment.getRange(
+          1, rowsAsListOfValuesEndorsment.length)) {
+        SkillData skill = SkillData(row[1]);
+        if (row[4] == "ACCEPTED" && !outData.contains(skill)) {
+          outData.add(skill);
+        }
+      }
+    } on Exception catch (_) {}
+
+    return outData;
+  }
+
   Future<List<List>> _getListFromCSV(File csvFile) async {
-    return const CsvToListConverter(eol: "\n")
+    return const CsvToListConverter(eol: "\n", shouldParseNumbers: false)
         .convert(await csvFile.readAsString());
   }
 
