@@ -17,9 +17,6 @@ class ThirdRoute extends StatelessWidget {
   final _appDataDir = Directory.systemTemp;
 
   void _pickFile() async {
-    // opens storage to pick files and the picked file or files
-    // are assigned into result and if no file is chosen result is null.
-    // you can also toggle "allowMultiple" true or false depending on your need
     final FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
       type: FileType.custom,
@@ -30,21 +27,72 @@ class ThirdRoute extends StatelessWidget {
       String? zipFilePath = result.files.single.path;
       if (zipFilePath != null) {
         File file = File(zipFilePath);
-        var tmp = await _getFilesFromZip(file);
-        if (tmp != null) {
-          final String endor =
-              File("${tmp.path}/Positions.csv").readAsStringSync();
-          print(endor);
-          List<List<dynamic>> rowsAsListOfValues =
-              const CsvToListConverter(eol: "\n").convert(endor);
-          for (var row in rowsAsListOfValues) {
-            final PositionsData data =
-                PositionsData(row[0], row[1], row[2], row[3], row[4], row[5]);
-            data.debugPrint();
-          }
+        Directory? unpackedFiles = await _getFilesFromZip(file);
+        if (unpackedFiles != null) {
+          await _parseLinkedInData(unpackedFiles);
         }
       }
     }
+  }
+
+  Future<void> _parseLinkedInData(Directory unpackedCsvFiles) async {
+    var postions = await _parsePositions(unpackedCsvFiles);
+    var profile = await _parseProfile(unpackedCsvFiles);
+
+    profile.debugPrint();
+    for (var position in postions) {
+      position.debugPrint();
+    }
+  }
+
+  Future<List<PositionData>> _parsePositions(Directory unpackedCsvFiles) async {
+    File positionsCsv = File("${unpackedCsvFiles.path}/Positions.csv");
+
+    if (!(await positionsCsv.exists())) {
+      return [];
+    }
+    List<PositionData> outData = [];
+
+    try {
+      List<List<dynamic>> rowsAsListOfValues =
+          await _getListFromCSV(positionsCsv);
+
+      // First line is an header
+      for (var row
+          in rowsAsListOfValues.getRange(1, rowsAsListOfValues.length)) {
+        outData
+            .add(PositionData(row[0], row[1], row[2], row[3], row[4], row[5]));
+      }
+    } on Exception catch (_) {}
+
+    return outData;
+  }
+
+  Future<ProfileData> _parseProfile(Directory unpackedCsvFiles) async {
+    File profileCsv = File("${unpackedCsvFiles.path}/Profile.csv");
+
+    if (!(await profileCsv.exists())) {
+      return ProfileData.empty();
+    }
+    ProfileData outData;
+    try {
+      List<List<dynamic>> rowsAsListOfValues =
+          await _getListFromCSV(profileCsv);
+
+      // First line is an header
+      var row = rowsAsListOfValues[1];
+
+      outData = ProfileData(row[0], row[1], row[5], row[7], row[9]);
+    } on Exception catch (_) {
+      outData = ProfileData.empty();
+    }
+
+    return outData;
+  }
+
+  Future<List<List>> _getListFromCSV(File csvFile) async {
+    return const CsvToListConverter(eol: "\n")
+        .convert(await csvFile.readAsString());
   }
 
   Future<Directory?> _getFilesFromZip(File myZipData) async {

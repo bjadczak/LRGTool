@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class PositionsData {
+class PositionData {
   final String companyName;
   final String title;
   final String description;
@@ -8,10 +8,10 @@ class PositionsData {
   final DateTime? startedOn;
   final DateTime? finishedOn;
 
-  PositionsData._(this.companyName, this.title, this.description, this.location,
+  PositionData._(this.companyName, this.title, this.description, this.location,
       this.startedOn, this.finishedOn);
 
-  factory PositionsData(String companyName, String title, String description,
+  factory PositionData(String companyName, String title, String description,
       String location, String startedOn, String finishedOn) {
     DateTime? start;
     DateTime? finish;
@@ -26,7 +26,7 @@ class PositionsData {
     } on FormatException catch (_) {
       finish = null;
     }
-    return PositionsData._(
+    return PositionData._(
         companyName, title, description, location, start, finish);
   }
 
@@ -35,3 +35,26 @@ class PositionsData {
         "Job as ${this.title}, at ${this.companyName} located in ${this.location}.\n${this.description}. From ${this.startedOn} until ${this.finishedOn}.");
   }
 }
+
+class ProfileData {
+  final String firstName;
+  final String secondName;
+  final String headLine;
+  final String industry;
+  final String location;
+
+  ProfileData(this.firstName, this.secondName, this.headLine, this.industry,
+      this.location);
+  ProfileData.empty()
+      : firstName = "",
+        secondName = "",
+        headLine = "",
+        industry = "",
+        location = "";
+  void debugPrint() {
+    print(
+        "Profile of ${firstName} ${secondName}. ${headLine} ${industry} ${location}");
+  }
+}
+
+class SkillData {}
