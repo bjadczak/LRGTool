@@ -41,7 +41,9 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             loadFromZipOrClear(context),
             ElevatedButton(
-              child: const Text('Edit data screen'),
+              child: Text(_cvData?.isEmpty ?? true
+                  ? "Insert data screen"
+                  : 'Edit data screen'),
               onPressed: () {
                 launchEditData(context);
               },
@@ -72,7 +74,11 @@ class _MainScreenState extends State<MainScreen> {
     if (!mounted) return;
 
     setState(() {
-      _cvData = result;
+      if (result?.isEmpty ?? true) {
+        _cvData = null;
+      } else {
+        _cvData = result;
+      }
     });
   }
 
@@ -81,7 +87,7 @@ class _MainScreenState extends State<MainScreen> {
       content: Text('Unavilable on web'),
     );
 
-    return _cvData == null && _cvData != CvData.empty()
+    return _cvData == null
         ? kIsWeb
             ? ElevatedButton(
                 child: const Text('Load data from Zip'),

@@ -80,6 +80,15 @@ class ProfileData {
     print(
         "Profile of ${firstName} ${secondName}. ${headline} ${industry} ${location}. Email: ${email}");
   }
+
+  bool get isEmpty {
+    return firstName.isEmpty &&
+        secondName.isEmpty &&
+        headline.isEmpty &&
+        industry.isEmpty &&
+        location.isEmpty &&
+        email.isEmpty;
+  }
 }
 
 class EducationData {
@@ -182,6 +191,13 @@ class CvData {
         other.education == education &&
         other.positions == positions &&
         other.profileData == profileData;
+  }
+
+  bool get isEmpty {
+    return positions.isEmpty &&
+        education.isEmpty &&
+        skills.isEmpty &&
+        profileData.isEmpty;
   }
 
   void debugPrint() {

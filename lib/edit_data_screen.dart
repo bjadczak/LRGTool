@@ -225,7 +225,9 @@ class _DialogState extends State<Dialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      title: Text(field),
       content: TextField(
+        maxLines: null,
         onChanged: (value) => setState(() {
           content = value;
         }),
