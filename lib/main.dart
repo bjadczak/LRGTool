@@ -2,13 +2,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:lrgtool/linkedin_data_structs.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:flutter_archive/flutter_archive.dart';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'load_data_screen.dart';
 
@@ -39,12 +38,7 @@ class _MainScreenState extends State<MainScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              child: const Text('Load data from Zip'),
-              onPressed: () {
-                launchLoadingFromZip(context);
-              },
-            ),
+            excludedFromWebButton(context),
             ElevatedButton(
               child: const Text('Test PDF screen'),
               onPressed: () {
@@ -60,6 +54,26 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
     );
+  }
+
+  ElevatedButton excludedFromWebButton(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text('Unavilable on web'),
+    );
+
+    return kIsWeb
+        ? ElevatedButton(
+            child: const Text('Load data from Zip'),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            },
+          )
+        : ElevatedButton(
+            child: const Text('Load data from Zip'),
+            onPressed: () {
+              launchLoadingFromZip(context);
+            },
+          );
   }
 
   Future<void> launchLoadingFromZip(BuildContext context) async {

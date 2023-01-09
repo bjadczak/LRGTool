@@ -1,18 +1,20 @@
+import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:flutter_archive/flutter_archive.dart';
+
+import 'package:archive/archive.dart';
 
 import 'linkedin_data_structs.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class LoadDataFromZip extends StatefulWidget {
-  CvData? _cvData;
+  final CvData? _cvData;
 
-  LoadDataFromZip(CvData? cvData, {super.key}) : _cvData = cvData;
+  const LoadDataFromZip(CvData? cvData, {super.key}) : _cvData = cvData;
 
   @override
   State<LoadDataFromZip> createState() => _LoadDataFromZipState(_cvData);
@@ -71,24 +73,17 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
 
     destinationDir.createSync();
 
-    final extractFutures = <Future>[];
-
     try {
-      extractFutures.add(ZipFile.extractToDirectory(
-        zipFile: myZipData,
-        destinationDir: destinationDir,
-      ));
+      final bytes = myZipData.readAsBytesSync();
+      final archive = ZipDecoder().decodeBytes(bytes);
 
-      await Future.wait<void>(extractFutures);
-    } on PlatformException catch (e, stacktrace) {
+      extractArchiveToDisk(archive, destinationDir.path);
+    } on FileSystemException catch (e, stacktrace) {
       print('Exception: ' + e.toString());
       print('Stacktrace: ' + stacktrace.toString());
       return null;
     }
     try {
-      for (var element in destinationDir.listSync()) {
-        print(element.path);
-      }
       return Directory(destinationDir
           .listSync()
           .firstWhere(
