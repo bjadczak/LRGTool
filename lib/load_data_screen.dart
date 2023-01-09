@@ -14,7 +14,7 @@ class LoadDataFromZip extends StatefulWidget {
   const LoadDataFromZip(CvData? cvData, {super.key}) : _cvData = cvData;
 
   @override
-  State<LoadDataFromZip> createState() => _LoadDataFromZipState(_cvData);
+  State<LoadDataFromZip> createState() => _LoadDataFromZipState();
 }
 
 class _LoadDataFromZipState extends State<LoadDataFromZip> {
@@ -24,9 +24,12 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
   bool _showClear = false;
   CvData? _cvData;
 
-  _LoadDataFromZipState(cvData) : _cvData = cvData {
+  @override
+  initState() {
+    super.initState();
+    _cvData = widget._cvData;
     items = _cvData?.getListOfData() ?? [];
-    _showClear = cvData != null;
+    _showClear = _cvData != null;
   }
 
   Future<void> _pickZipDataFile(context) async {

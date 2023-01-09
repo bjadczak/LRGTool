@@ -13,14 +13,14 @@ import 'load_data_screen.dart';
 import 'edit_data_screen.dart';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     title: 'Navigation Basics',
     home: MainScreen(),
   ));
 }
 
 class MainScreen extends StatefulWidget {
-  MainScreen({super.key});
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -39,14 +39,11 @@ class _MainScreenState extends State<MainScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            excludedFromWebButton(context),
+            loadFromZipOrClear(context),
             ElevatedButton(
               child: const Text('Edit data screen'),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => EditData(_cvData)),
-                );
+                launchEditData(context);
               },
             ),
             ElevatedButton(
@@ -66,22 +63,44 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  ElevatedButton excludedFromWebButton(BuildContext context) {
+  Future<void> launchEditData(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditData(_cvData)),
+    ) as CvData?;
+
+    if (!mounted) return;
+
+    setState(() {
+      _cvData = result;
+    });
+  }
+
+  ElevatedButton loadFromZipOrClear(BuildContext context) {
     const snackBar = SnackBar(
       content: Text('Unavilable on web'),
     );
 
-    return kIsWeb
-        ? ElevatedButton(
-            child: const Text('Load data from Zip'),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            },
-          )
+    return _cvData == null && _cvData != CvData.empty()
+        ? kIsWeb
+            ? ElevatedButton(
+                child: const Text('Load data from Zip'),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                },
+              )
+            : ElevatedButton(
+                child: const Text('Load data from Zip'),
+                onPressed: () {
+                  launchLoadingFromZip(context);
+                },
+              )
         : ElevatedButton(
-            child: const Text('Load data from Zip'),
+            child: const Text('Clear data'),
             onPressed: () {
-              launchLoadingFromZip(context);
+              setState(() {
+                _cvData = null;
+              });
             },
           );
   }

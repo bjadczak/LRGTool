@@ -175,6 +175,15 @@ class CvData {
     return CvData._(positions, education, skills, profileData);
   }
 
+  @override
+  bool operator ==(Object other) {
+    return other is CvData &&
+        other.skills == skills &&
+        other.education == education &&
+        other.positions == positions &&
+        other.profileData == profileData;
+  }
+
   void debugPrint() {
     profileData.debugPrint();
     for (var pos in positions) {
