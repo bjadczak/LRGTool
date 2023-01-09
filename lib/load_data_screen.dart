@@ -3,9 +3,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:io';
-import 'package:flutter/services.dart';
-
-import 'package:archive/archive.dart';
 
 import 'linkedin_data_structs.dart';
 

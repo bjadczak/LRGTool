@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'load_data_screen.dart';
+import 'edit_data_screen.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -39,6 +40,15 @@ class _MainScreenState extends State<MainScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             excludedFromWebButton(context),
+            ElevatedButton(
+              child: const Text('Edit data screen'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditData(_cvData)),
+                );
+              },
+            ),
             ElevatedButton(
               child: const Text('Test PDF screen'),
               onPressed: () {

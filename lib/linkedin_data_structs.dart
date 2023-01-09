@@ -5,12 +5,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class PositionData {
-  final String companyName;
-  final String title;
-  final String description;
-  final String location;
-  final DateTime? startedOn;
-  final DateTime? finishedOn;
+  String companyName;
+  String title;
+  String description;
+  String location;
+  DateTime? startedOn;
+  DateTime? finishedOn;
 
   PositionData._(this.companyName, this.title, this.description, this.location,
       this.startedOn, this.finishedOn);
@@ -60,12 +60,12 @@ class PositionData {
 }
 
 class ProfileData {
-  final String firstName;
-  final String secondName;
-  final String headline;
-  final String industry;
-  final String location;
-  final String email;
+  String firstName;
+  String secondName;
+  String headline;
+  String industry;
+  String location;
+  String email;
 
   ProfileData(this.firstName, this.secondName, this.headline, this.industry,
       this.location, this.email);
@@ -83,10 +83,10 @@ class ProfileData {
 }
 
 class EducationData {
-  final String schoolName;
-  final DateTime? startedOn;
-  final DateTime? finishedOn;
-  final String degree;
+  String schoolName;
+  DateTime? startedOn;
+  DateTime? finishedOn;
+  String degree;
 
   EducationData._(
       this.schoolName, this.startedOn, this.finishedOn, this.degree);
@@ -134,7 +134,7 @@ class EducationData {
 }
 
 class SkillData {
-  final String skill;
+  String skill;
 
   SkillData(this.skill);
   SkillData.empty() : skill = "";
@@ -153,10 +153,10 @@ class SkillData {
 }
 
 class CvData {
-  late final List<PositionData> positions;
-  late final List<EducationData> education;
-  late final List<SkillData> skills;
-  late final ProfileData profileData;
+  List<PositionData> positions;
+  List<EducationData> education;
+  List<SkillData> skills;
+  ProfileData profileData;
 
   CvData._(this.positions, this.education, this.skills, this.profileData);
 
