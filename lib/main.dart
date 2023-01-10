@@ -8,15 +8,21 @@ import 'package:printing/printing.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'load_data_screen.dart';
 import 'edit_data_screen.dart';
 
-void main() {
-  dotenv.load(fileName: ".env");
-
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  await Firebase.initializeApp(
+    name: 'com-bjadczak-lrgtool',
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MaterialApp(
     title: 'Navigation Basics',
     home: MainScreen(),
