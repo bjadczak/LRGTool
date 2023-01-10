@@ -38,9 +38,9 @@ class _EditDataState extends State<EditData> {
           getTile(
               'Edit past positions', () => launchEditPositionsScreen(context)),
           const Divider(),
-          getTile('Edit education', () => {}),
+          getTile('Edit education', () => launchEditEducationsScreen(context)),
           const Divider(),
-          getTile('Edit skills', () => {}),
+          getTile('Edit skills', () => launchEditSkillsScreen(context)),
           const Divider(),
         ],
       )),
@@ -70,6 +70,32 @@ class _EditDataState extends State<EditData> {
 
     setState(() {
       dataOnScreen.positions = result;
+    });
+  }
+
+  Future<void> launchEditEducationsScreen(BuildContext context) async {
+    final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: ((context) => EditEducations(dataOnScreen.education))))
+        as List<EducationData>?;
+    if (!mounted || result == null) return;
+
+    setState(() {
+      dataOnScreen.education = result;
+    });
+  }
+
+  Future<void> launchEditSkillsScreen(BuildContext context) async {
+    final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: ((context) => EditSkills(dataOnScreen.skills))))
+        as List<SkillData>?;
+    if (!mounted || result == null) return;
+
+    setState(() {
+      dataOnScreen.skills = result;
     });
   }
 
@@ -241,7 +267,7 @@ class _EditPositions extends State<EditPositions> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: const Text('Edit Previous Positions'),
         leading: BackButton(
           onPressed: () => Navigator.pop(context, _data),
         ),
@@ -252,41 +278,44 @@ class _EditPositions extends State<EditPositions> {
           children: widgetListOfPositions(context),
         ),
       ),
-    );
-  }
-
-  Widget getTile(String filed, String value, void Function()? onTap) {
-    return ListTile(
-      title: Row(
-        children: [
-          Flexible(
-              flex: 1,
-              child: Center(
-                child: Text(filed),
-              )),
-          Flexible(
-            flex: 2,
-            child: Text(value, style: Theme.of(context).textTheme.headline5),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.plus_one),
+        onPressed: () => setState(() {
+          _data.add(PositionData.empty());
+        }),
       ),
-      onTap: onTap,
     );
-  }
-
-  Future<DateTime?> _selectDate(BuildContext context, DateTime initial) async {
-    return await showDatePicker(
-        context: context,
-        initialDate: initial,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
   }
 
   List<Widget> widgetListOfPositions(BuildContext context) {
     List<Widget> listOfPositions = [];
     for (var posData in _data) {
+      listOfPositions.add(ListTile(
+        title: Row(
+          children: [
+            Flexible(
+                flex: 3,
+                child: Center(
+                  child: Text("Position number ${_data.indexOf(posData) + 1}"),
+                )),
+            Flexible(
+              flex: 2,
+              child: ElevatedButton(
+                child: const Text("Remove position"),
+                onPressed: () => {
+                  setState(() {
+                    _data.remove(posData);
+                  })
+                },
+              ),
+            ),
+          ],
+        ),
+      ));
+      listOfPositions.add(const Divider());
       listOfPositions.add(
         getTile(
+          context,
           'Company Name',
           posData.companyName,
           () => showDialog(
@@ -308,6 +337,7 @@ class _EditPositions extends State<EditPositions> {
       listOfPositions.add(const Divider());
       listOfPositions.add(
         getTile(
+          context,
           'Title',
           posData.title,
           () => showDialog(
@@ -329,6 +359,7 @@ class _EditPositions extends State<EditPositions> {
       listOfPositions.add(const Divider());
       listOfPositions.add(
         getTile(
+          context,
           'Description',
           posData.description,
           () => showDialog(
@@ -350,6 +381,7 @@ class _EditPositions extends State<EditPositions> {
       listOfPositions.add(const Divider());
       listOfPositions.add(
         getTile(
+          context,
           'Location',
           posData.location,
           () => showDialog(
@@ -371,6 +403,7 @@ class _EditPositions extends State<EditPositions> {
       listOfPositions.add(const Divider());
       listOfPositions.add(
         getTile(
+            context,
             'Starting Date',
             posData.startedOn == null
                 ? ""
@@ -395,6 +428,7 @@ class _EditPositions extends State<EditPositions> {
       listOfPositions.add(const Divider());
       listOfPositions.add(
         getTile(
+            context,
             'Finished Date',
             posData.finishedOn == null
                 ? ""
@@ -416,10 +450,303 @@ class _EditPositions extends State<EditPositions> {
                   )
                 }),
       );
-      listOfPositions.add(const Divider());
+      listOfPositions.add(const Divider(
+        thickness: 2,
+      ));
     }
 
     return listOfPositions;
+  }
+}
+
+class EditEducations extends StatefulWidget {
+  const EditEducations(List<EducationData> data, {super.key}) : _data = data;
+  final List<EducationData> _data;
+  @override
+  State<EditEducations> createState() => _EditEducations();
+}
+
+class _EditEducations extends State<EditEducations> {
+  @override
+  initState() {
+    super.initState();
+    _data = widget._data;
+  }
+
+  late List<EducationData> _data;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Edit Profile'),
+        leading: BackButton(
+          onPressed: () => Navigator.pop(context, _data),
+        ),
+      ),
+      body: Center(
+        child: ListView(
+          padding: const EdgeInsets.all(8),
+          children: widgetListOfEducations(context),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.plus_one),
+        onPressed: () => setState(() {
+          _data.add(EducationData.empty());
+        }),
+      ),
+    );
+  }
+
+  List<Widget> widgetListOfEducations(BuildContext context) {
+    List<Widget> listOfEducations = [];
+    for (var eduData in _data) {
+      listOfEducations.add(ListTile(
+        title: Row(
+          children: [
+            Flexible(
+                flex: 3,
+                child: Center(
+                  child: Text("School number ${_data.indexOf(eduData) + 1}"),
+                )),
+            Flexible(
+              flex: 2,
+              child: ElevatedButton(
+                child: const Text("Remove position"),
+                onPressed: () => {
+                  setState(() {
+                    _data.remove(eduData);
+                  })
+                },
+              ),
+            ),
+          ],
+        ),
+      ));
+      listOfEducations.add(const Divider());
+      listOfEducations.add(
+        getTile(
+          context,
+          'School Name',
+          eduData.schoolName,
+          () => showDialog(
+            context: context,
+            builder: (context) => const Dialog("School Name"),
+          ).then(
+            (valueFromDialog) {
+              if (valueFromDialog != null) {
+                setState(
+                  () {
+                    eduData.schoolName = valueFromDialog;
+                  },
+                );
+              }
+            },
+          ),
+        ),
+      );
+      listOfEducations.add(const Divider());
+      listOfEducations.add(
+        getTile(
+          context,
+          'Degree',
+          eduData.degree,
+          () => showDialog(
+            context: context,
+            builder: (context) => const Dialog("Degree"),
+          ).then(
+            (valueFromDialog) {
+              if (valueFromDialog != null) {
+                setState(
+                  () {
+                    eduData.degree = valueFromDialog;
+                  },
+                );
+              }
+            },
+          ),
+        ),
+      );
+      listOfEducations.add(const Divider());
+      listOfEducations.add(
+        getTile(
+          context,
+          'Course',
+          eduData.course,
+          () => showDialog(
+            context: context,
+            builder: (context) => const Dialog("Course"),
+          ).then(
+            (valueFromDialog) {
+              if (valueFromDialog != null) {
+                setState(
+                  () {
+                    eduData.course = valueFromDialog;
+                  },
+                );
+              }
+            },
+          ),
+        ),
+      );
+      listOfEducations.add(const Divider());
+      listOfEducations.add(
+        getTile(
+            context,
+            'Starting Date',
+            eduData.startedOn == null
+                ? ""
+                : "${eduData.startedOn?.year}.${eduData.startedOn?.month}",
+            () => {
+                  _selectDate(context, eduData.startedOn ?? DateTime.now())
+                      .then(
+                    (valueFromDialog) {
+                      setState(
+                        () {
+                          setState(
+                            () {
+                              eduData.startedOn = valueFromDialog;
+                            },
+                          );
+                        },
+                      );
+                    },
+                  )
+                }),
+      );
+      listOfEducations.add(const Divider());
+      listOfEducations.add(
+        getTile(
+            context,
+            'Finished Date',
+            eduData.finishedOn == null
+                ? ""
+                : "${eduData.finishedOn?.year}.${eduData.finishedOn?.month}",
+            () => {
+                  _selectDate(context, eduData.finishedOn ?? DateTime.now())
+                      .then(
+                    (valueFromDialog) {
+                      setState(
+                        () {
+                          setState(
+                            () {
+                              eduData.finishedOn = valueFromDialog;
+                            },
+                          );
+                        },
+                      );
+                    },
+                  )
+                }),
+      );
+      listOfEducations.add(const Divider(
+        thickness: 2,
+      ));
+    }
+
+    return listOfEducations;
+  }
+}
+
+class EditSkills extends StatefulWidget {
+  const EditSkills(List<SkillData> data, {super.key}) : _data = data;
+  final List<SkillData> _data;
+  @override
+  State<EditSkills> createState() => _EditSkills();
+}
+
+class _EditSkills extends State<EditSkills> {
+  @override
+  initState() {
+    super.initState();
+    _data = widget._data;
+  }
+
+  late List<SkillData> _data;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Edit Profile'),
+        leading: BackButton(
+          onPressed: () => Navigator.pop(context, _data),
+        ),
+      ),
+      body: Center(
+        child: ListView(
+          padding: const EdgeInsets.all(8),
+          children: widgetListOfSkills(context),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.plus_one),
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) => const Dialog("New Skill"),
+        ).then(
+          (valueFromDialog) {
+            if (valueFromDialog != null) {
+              setState(
+                () {
+                  _data.add(SkillData(valueFromDialog));
+                },
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  List<Widget> widgetListOfSkills(BuildContext context) {
+    List<Widget> listOfSkills = [];
+    for (var skillData in _data) {
+      listOfSkills.add(ListTile(
+        title: Row(
+          children: [
+            Flexible(
+                flex: 3,
+                child: Center(
+                  child: Text("Skill number ${_data.indexOf(skillData) + 1}"),
+                )),
+            Flexible(
+              flex: 2,
+              child: ElevatedButton(
+                child: const Text("Remove skill"),
+                onPressed: () => {
+                  setState(() {
+                    _data.remove(skillData);
+                  })
+                },
+              ),
+            ),
+          ],
+        ),
+      ));
+      listOfSkills.add(const Divider());
+      listOfSkills.add(ListTile(
+        title: Center(child: Text(skillData.skill)),
+        onTap: () => showDialog(
+          context: context,
+          builder: (context) => const Dialog("Skill"),
+        ).then(
+          (valueFromDialog) {
+            if (valueFromDialog != null) {
+              setState(
+                () {
+                  skillData.skill = valueFromDialog;
+                },
+              );
+            }
+          },
+        ),
+      ));
+      listOfSkills.add(const Divider(
+        thickness: 2,
+      ));
+    }
+
+    return listOfSkills;
   }
 }
 
@@ -503,4 +830,32 @@ class _DataDialogState extends State<DataDialog> {
       ],
     );
   }
+}
+
+Widget getTile(
+    BuildContext context, String filed, String value, void Function()? onTap) {
+  return ListTile(
+    title: Row(
+      children: [
+        Flexible(
+            flex: 1,
+            child: Center(
+              child: Text(filed),
+            )),
+        Flexible(
+          flex: 2,
+          child: Text(value, style: Theme.of(context).textTheme.headline5),
+        ),
+      ],
+    ),
+    onTap: onTap,
+  );
+}
+
+Future<DateTime?> _selectDate(BuildContext context, DateTime initial) async {
+  return await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101));
 }

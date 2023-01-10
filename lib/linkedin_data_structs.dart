@@ -96,15 +96,17 @@ class EducationData {
   DateTime? startedOn;
   DateTime? finishedOn;
   String degree;
+  String course;
 
-  EducationData._(
-      this.schoolName, this.startedOn, this.finishedOn, this.degree);
+  EducationData._(this.schoolName, this.startedOn, this.finishedOn, this.degree,
+      this.course);
 
   EducationData.empty()
       : schoolName = "",
         startedOn = null,
         finishedOn = null,
-        degree = "";
+        degree = "",
+        course = "";
   factory EducationData(
       String schoolName, String startedOn, String finishedOn, String degree) {
     DateTime? start;
@@ -133,7 +135,7 @@ class EducationData {
       finish = null;
     }
 
-    return EducationData._(schoolName, start, finish, degree);
+    return EducationData._(schoolName, start, finish, degree, "");
   }
 
   void debugPrint() {
