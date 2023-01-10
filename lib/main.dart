@@ -16,18 +16,41 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'load_data_screen.dart';
 import 'edit_data_screen.dart';
 
+import 'package:lrgtool/widget_tree.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
-    name: 'com-bjadczak-lrgtool',
+    name: dotenv.env['FIREBASE_NAME'] ?? "",
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MaterialApp(
-    title: 'Navigation Basics',
-    home: MainScreen(),
-  ));
+  runApp(const MyApp());
 }
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: WidgetTree(),
+    );
+  }
+}
+
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await dotenv.load(fileName: ".env");
+//   await Firebase.initializeApp(
+//     name: 'com-bjadczak-lrgtool',
+//     options: DefaultFirebaseOptions.currentPlatform,
+//   );
+//   runApp(const MaterialApp(
+//     title: 'Navigation Basics',
+//     home: MainScreen(),
+//   ));
+// }
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -135,8 +158,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp_OLD extends StatelessWidget {
+  const MyApp_OLD({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
