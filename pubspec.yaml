@@ -43,6 +43,8 @@ dependencies:
   intl: ^0.18.0
   flutter_speed_dial: ^6.2.0
   archive: ^3.3.5
+  firebase_core: ^2.4.1
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   flutter_test:

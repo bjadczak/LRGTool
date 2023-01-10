@@ -1,4 +1,4 @@
-package com.example.lrgtool
+package com.bjadczak.lrgtool
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,3 +1,10 @@
+# .env File
+*.env
+# Firebase config files
+google-services.json
+GoogleService-Info.plist
+firebase_app_id_file.json
+
 # Miscellaneous
 *.class
 *.lock

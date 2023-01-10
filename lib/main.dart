@@ -7,12 +7,16 @@ import 'package:printing/printing.dart';
 
 import 'package:flutter/services.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'load_data_screen.dart';
 import 'edit_data_screen.dart';
 
 void main() {
+  dotenv.load(fileName: ".env");
+
   runApp(const MaterialApp(
     title: 'Navigation Basics',
     home: MainScreen(),
