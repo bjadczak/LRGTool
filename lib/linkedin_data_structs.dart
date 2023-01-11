@@ -66,16 +66,18 @@ class ProfileData {
   String industry;
   String location;
   String email;
+  String summary;
 
   ProfileData(this.firstName, this.secondName, this.headline, this.industry,
-      this.location, this.email);
+      this.location, this.email, this.summary);
   ProfileData.empty()
       : firstName = "",
         secondName = "",
         headline = "",
         industry = "",
         location = "",
-        email = "";
+        email = "",
+        summary = "";
   void debugPrint() {
     print(
         "Profile of ${firstName} ${secondName}. ${headline} ${industry} ${location}. Email: ${email}");
@@ -87,7 +89,8 @@ class ProfileData {
         headline.isEmpty &&
         industry.isEmpty &&
         location.isEmpty &&
-        email.isEmpty;
+        email.isEmpty &&
+        summary.isEmpty;
   }
 }
 
@@ -270,7 +273,8 @@ class CvData {
         email = "";
       }
 
-      outData = ProfileData(row[0], row[1], row[5], row[7], row[9], email);
+      outData =
+          ProfileData(row[0], row[1], row[5], row[7], row[9], email, row[6]);
     } on Exception catch (e, stacktrace) {
       print('Exception: ' + e.toString());
       print('Stacktrace: ' + stacktrace.toString());
@@ -358,6 +362,7 @@ class CvData {
     items.add(HeadingItem("Profile data"));
     items.add(MessageItem(
         "${profileData.firstName} ${profileData.secondName}", "Name"));
+    items.add(MessageItem(profileData.summary, "Summary"));
     items.add(MessageItem(profileData.email, "e-mail"));
     items.add(MessageItem(profileData.headline, "Profile headline"));
     items.add(MessageItem(profileData.industry, "Industry"));
