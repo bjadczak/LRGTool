@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lrgtool/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lrgtool/create_pdf_screen.dart';
 import 'package:lrgtool/database_handler.dart';
 import 'package:lrgtool/look_through_my_cv.dart';
 
@@ -69,16 +70,22 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ElevatedButton(
-              child: Text("Upload user UID"),
+              child: Text("Upload CV"),
               onPressed: () {
                 DatabaseHandler().createUser(
                     Auth().currentUser?.uid ?? "", _cvData ?? CvData.empty());
               },
             ),
             ElevatedButton(
-              child: Text("Load from datebase"),
+              child: Text("Load CV from datebase"),
               onPressed: () {
                 launchLoadingFromdatabase(context);
+              },
+            ),
+            ElevatedButton(
+              child: Text("Create PDF"),
+              onPressed: () {
+                launchCreatePdfScreen(context);
               },
             ),
           ],
@@ -157,5 +164,13 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _cvData = result;
     });
+  }
+
+  Future<void> launchCreatePdfScreen(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => CreatePDF(_cvData ?? CvData.empty())),
+    );
   }
 }
