@@ -4,6 +4,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'package:json_annotation/json_annotation.dart';
+part 'linkedin_data_structs.g.dart';
+
+@JsonSerializable(constructor: "_", explicitToJson: true)
 class PositionData {
   String companyName;
   String title;
@@ -52,13 +56,16 @@ class PositionData {
     return PositionData._(
         companyName, title, description, location, start, finish);
   }
+  factory PositionData.fromJson(Map<String, dynamic> json) =>
+      _$PositionDataFromJson(json);
+  Map<String, dynamic> toJson() => _$PositionDataToJson(this);
 
   void debugPrint() {
-    print(
-        "Job as ${this.title}, at ${this.companyName} located in ${this.location}.\n${this.description}. From ${this.startedOn} until ${this.finishedOn}.");
+    print(toJson());
   }
 }
 
+@JsonSerializable(explicitToJson: true)
 class ProfileData {
   String firstName;
   String secondName;
@@ -78,10 +85,6 @@ class ProfileData {
         location = "",
         email = "",
         summary = "";
-  void debugPrint() {
-    print(
-        "Profile of ${firstName} ${secondName}. ${headline} ${industry} ${location}. Email: ${email}");
-  }
 
   bool get isEmpty {
     return firstName.isEmpty &&
@@ -92,8 +95,17 @@ class ProfileData {
         email.isEmpty &&
         summary.isEmpty;
   }
+
+  factory ProfileData.fromJson(Map<String, dynamic> json) =>
+      _$ProfileDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ProfileDataToJson(this);
+
+  void debugPrint() {
+    print(toJson());
+  }
 }
 
+@JsonSerializable(constructor: "_", explicitToJson: true)
 class EducationData {
   String schoolName;
   DateTime? startedOn;
@@ -141,20 +153,28 @@ class EducationData {
     return EducationData._(schoolName, start, finish, degree, "");
   }
 
+  factory EducationData.fromJson(Map<String, dynamic> json) =>
+      _$EducationDataFromJson(json);
+  Map<String, dynamic> toJson() => _$EducationDataToJson(this);
+
   void debugPrint() {
-    print(
-        "${schoolName} started ${startedOn?.year}, finished ${finishedOn?.year} with ${degree}");
+    print(toJson());
   }
 }
 
+@JsonSerializable(explicitToJson: true)
 class SkillData {
   String skill;
 
   SkillData(this.skill);
   SkillData.empty() : skill = "";
 
+  factory SkillData.fromJson(Map<String, dynamic> json) =>
+      _$SkillDataFromJson(json);
+  Map<String, dynamic> toJson() => _$SkillDataToJson(this);
+
   void debugPrint() {
-    print("Skill: ${skill}");
+    print(toJson());
   }
 
   @override
@@ -166,6 +186,7 @@ class SkillData {
   int get hashCode => skill.hashCode;
 }
 
+@JsonSerializable(constructor: "_", explicitToJson: true)
 class CvData {
   List<PositionData> positions;
   List<EducationData> education;
@@ -187,6 +208,13 @@ class CvData {
     var skills = await _parseSkills(unpackedCsvFiles);
 
     return CvData._(positions, education, skills, profileData);
+  }
+
+  factory CvData.fromJson(Map<String, dynamic> json) => _$CvDataFromJson(json);
+  Map<String, dynamic> toJson() => _$CvDataToJson(this);
+
+  void debugPrintJson() {
+    print(toJson());
   }
 
   @override
