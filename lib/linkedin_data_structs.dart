@@ -192,14 +192,17 @@ class CvData {
   List<EducationData> education;
   List<SkillData> skills;
   ProfileData profileData;
+  DateTime timeOfCreation;
 
-  CvData._(this.positions, this.education, this.skills, this.profileData);
+  CvData._(this.positions, this.education, this.skills, this.profileData,
+      this.timeOfCreation);
 
   CvData.empty()
       : positions = [],
         education = [],
         skills = [],
-        profileData = ProfileData.empty();
+        profileData = ProfileData.empty(),
+        timeOfCreation = DateTime.now();
 
   static Future<CvData> create(Directory unpackedCsvFiles) async {
     var positions = await _parsePositions(unpackedCsvFiles);
@@ -207,7 +210,7 @@ class CvData {
     var education = await _parseEducation(unpackedCsvFiles);
     var skills = await _parseSkills(unpackedCsvFiles);
 
-    return CvData._(positions, education, skills, profileData);
+    return CvData._(positions, education, skills, profileData, DateTime.now());
   }
 
   factory CvData.fromJson(Map<String, dynamic> json) => _$CvDataFromJson(json);

@@ -92,6 +92,7 @@ CvData _$CvDataFromJson(Map<String, dynamic> json) => CvData._(
           .map((e) => SkillData.fromJson(e as Map<String, dynamic>))
           .toList(),
       ProfileData.fromJson(json['profileData'] as Map<String, dynamic>),
+      DateTime.parse(json['timeOfCreation'] as String),
     );
 
 Map<String, dynamic> _$CvDataToJson(CvData instance) => <String, dynamic>{
@@ -99,4 +100,5 @@ Map<String, dynamic> _$CvDataToJson(CvData instance) => <String, dynamic>{
       'education': instance.education.map((e) => e.toJson()).toList(),
       'skills': instance.skills.map((e) => e.toJson()).toList(),
       'profileData': instance.profileData.toJson(),
+      'timeOfCreation': instance.timeOfCreation.toIso8601String(),
     };

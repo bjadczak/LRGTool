@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lrgtool/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lrgtool/database_handler.dart';
+import 'package:lrgtool/look_through_my_cv.dart';
 
 import '../load_data_screen.dart';
 import '../edit_data_screen.dart';
@@ -44,10 +46,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: _title(),
       ),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
+      body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -61,6 +60,25 @@ class _HomePageState extends State<HomePage> {
                   : 'Edit data screen'),
               onPressed: () {
                 launchEditData(context);
+              },
+            ),
+            ElevatedButton(
+              child: Text("Show UID"),
+              onPressed: () {
+                print(Auth().currentUser?.uid ?? "No user loged in");
+              },
+            ),
+            ElevatedButton(
+              child: Text("Upload user UID"),
+              onPressed: () {
+                DatabaseHandler().createUser(
+                    Auth().currentUser?.uid ?? "", _cvData ?? CvData.empty());
+              },
+            ),
+            ElevatedButton(
+              child: Text("Load from datebase"),
+              onPressed: () {
+                launchLoadingFromdatabase(context);
               },
             ),
           ],
@@ -119,6 +137,19 @@ class _HomePageState extends State<HomePage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => LoadDataFromZip(_cvData)),
+    ) as CvData?;
+
+    if (!mounted) return;
+
+    setState(() {
+      _cvData = result;
+    });
+  }
+
+  Future<void> launchLoadingFromdatabase(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LookThroughFetchedCVs()),
     ) as CvData?;
 
     if (!mounted) return;
