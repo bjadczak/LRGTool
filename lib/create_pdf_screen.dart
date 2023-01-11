@@ -78,7 +78,7 @@ class CreatePDF extends StatelessWidget {
               pw.Flexible(
                 flex: 7,
                 child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
+                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                   children: [
                     pw.Flexible(
                       flex: 1,
@@ -147,9 +147,78 @@ class CreatePDF extends StatelessWidget {
                     ),
                     pw.VerticalDivider(),
                     pw.Flexible(
-                      flex: 2,
-                      child: pw.Container(
-                        color: PdfColor(1.0, 0, 0),
+                      flex: 3,
+                      child: pw.Column(
+                        mainAxisAlignment: pw.MainAxisAlignment.start,
+                        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                        children: [
+                          //Skills
+                          pw.Flexible(
+                            flex: 6,
+                            child: pw.Container(
+                              child: pw.Text(
+                                "Skills",
+                                style: pw.TextStyle(font: font, fontSize: 24),
+                                textAlign: pw.TextAlign.left,
+                              ),
+                            ),
+                          ),
+                          pw.Spacer(),
+                          pw.Flexible(
+                            flex: 6,
+                            child: pw.Container(
+                              child: pw.Builder(
+                                builder: (context) {
+                                  String text = "";
+                                  for (var skill in data.skills) {
+                                    text += "• ";
+                                    text += "${skill.skill}\n";
+                                  }
+                                  return pw.Text(
+                                    text,
+                                    style:
+                                        pw.TextStyle(font: font, fontSize: 18),
+                                    textAlign: pw.TextAlign.left,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          pw.Spacer(flex: 2),
+                          //Prevois positions
+                          pw.Flexible(
+                            flex: 6,
+                            child: pw.Container(
+                              child: pw.Text(
+                                "Previous work expirience",
+                                style: pw.TextStyle(font: font, fontSize: 24),
+                                textAlign: pw.TextAlign.left,
+                              ),
+                            ),
+                          ),
+                          pw.Spacer(),
+                          pw.Flexible(
+                            flex: 6,
+                            child: pw.Container(
+                              child: pw.Builder(
+                                builder: (context) {
+                                  String text = "";
+                                  for (var posData in data.positions) {
+                                    text += "• ";
+                                    text +=
+                                        "${posData.companyName} - ${posData.title}\n${posData.description}${posData.startedOn == null ? "" : "\n${posData.startedOn?.year}-${posData.finishedOn?.year.toString() ?? ""}"}\n";
+                                  }
+                                  return pw.Text(
+                                    text,
+                                    style:
+                                        pw.TextStyle(font: font, fontSize: 18),
+                                    textAlign: pw.TextAlign.left,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
