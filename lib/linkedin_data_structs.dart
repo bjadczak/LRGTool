@@ -4,6 +4,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'package:json_annotation/json_annotation.dart';
+part 'linkedin_data_structs.g.dart';
+
+@JsonSerializable(constructor: "_", explicitToJson: true)
 class PositionData {
   String companyName;
   String title;
@@ -52,13 +56,16 @@ class PositionData {
     return PositionData._(
         companyName, title, description, location, start, finish);
   }
+  factory PositionData.fromJson(Map<String, dynamic> json) =>
+      _$PositionDataFromJson(json);
+  Map<String, dynamic> toJson() => _$PositionDataToJson(this);
 
   void debugPrint() {
-    print(
-        "Job as ${this.title}, at ${this.companyName} located in ${this.location}.\n${this.description}. From ${this.startedOn} until ${this.finishedOn}.");
+    print(toJson());
   }
 }
 
+@JsonSerializable(explicitToJson: true)
 class ProfileData {
   String firstName;
   String secondName;
@@ -66,20 +73,18 @@ class ProfileData {
   String industry;
   String location;
   String email;
+  String summary;
 
   ProfileData(this.firstName, this.secondName, this.headline, this.industry,
-      this.location, this.email);
+      this.location, this.email, this.summary);
   ProfileData.empty()
       : firstName = "",
         secondName = "",
         headline = "",
         industry = "",
         location = "",
-        email = "";
-  void debugPrint() {
-    print(
-        "Profile of ${firstName} ${secondName}. ${headline} ${industry} ${location}. Email: ${email}");
-  }
+        email = "",
+        summary = "";
 
   bool get isEmpty {
     return firstName.isEmpty &&
@@ -87,10 +92,20 @@ class ProfileData {
         headline.isEmpty &&
         industry.isEmpty &&
         location.isEmpty &&
-        email.isEmpty;
+        email.isEmpty &&
+        summary.isEmpty;
+  }
+
+  factory ProfileData.fromJson(Map<String, dynamic> json) =>
+      _$ProfileDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ProfileDataToJson(this);
+
+  void debugPrint() {
+    print(toJson());
   }
 }
 
+@JsonSerializable(constructor: "_", explicitToJson: true)
 class EducationData {
   String schoolName;
   DateTime? startedOn;
@@ -138,20 +153,28 @@ class EducationData {
     return EducationData._(schoolName, start, finish, degree, "");
   }
 
+  factory EducationData.fromJson(Map<String, dynamic> json) =>
+      _$EducationDataFromJson(json);
+  Map<String, dynamic> toJson() => _$EducationDataToJson(this);
+
   void debugPrint() {
-    print(
-        "${schoolName} started ${startedOn?.year}, finished ${finishedOn?.year} with ${degree}");
+    print(toJson());
   }
 }
 
+@JsonSerializable(explicitToJson: true)
 class SkillData {
   String skill;
 
   SkillData(this.skill);
   SkillData.empty() : skill = "";
 
+  factory SkillData.fromJson(Map<String, dynamic> json) =>
+      _$SkillDataFromJson(json);
+  Map<String, dynamic> toJson() => _$SkillDataToJson(this);
+
   void debugPrint() {
-    print("Skill: ${skill}");
+    print(toJson());
   }
 
   @override
@@ -163,19 +186,23 @@ class SkillData {
   int get hashCode => skill.hashCode;
 }
 
+@JsonSerializable(constructor: "_", explicitToJson: true)
 class CvData {
   List<PositionData> positions;
   List<EducationData> education;
   List<SkillData> skills;
   ProfileData profileData;
+  DateTime timeOfCreation;
 
-  CvData._(this.positions, this.education, this.skills, this.profileData);
+  CvData._(this.positions, this.education, this.skills, this.profileData,
+      this.timeOfCreation);
 
   CvData.empty()
       : positions = [],
         education = [],
         skills = [],
-        profileData = ProfileData.empty();
+        profileData = ProfileData.empty(),
+        timeOfCreation = DateTime.now();
 
   static Future<CvData> create(Directory unpackedCsvFiles) async {
     var positions = await _parsePositions(unpackedCsvFiles);
@@ -183,7 +210,14 @@ class CvData {
     var education = await _parseEducation(unpackedCsvFiles);
     var skills = await _parseSkills(unpackedCsvFiles);
 
-    return CvData._(positions, education, skills, profileData);
+    return CvData._(positions, education, skills, profileData, DateTime.now());
+  }
+
+  factory CvData.fromJson(Map<String, dynamic> json) => _$CvDataFromJson(json);
+  Map<String, dynamic> toJson() => _$CvDataToJson(this);
+
+  void debugPrintJson() {
+    print(toJson());
   }
 
   @override
@@ -270,7 +304,8 @@ class CvData {
         email = "";
       }
 
-      outData = ProfileData(row[0], row[1], row[5], row[7], row[9], email);
+      outData =
+          ProfileData(row[0], row[1], row[5], row[7], row[9], email, row[6]);
     } on Exception catch (e, stacktrace) {
       print('Exception: ' + e.toString());
       print('Stacktrace: ' + stacktrace.toString());
@@ -358,6 +393,7 @@ class CvData {
     items.add(HeadingItem("Profile data"));
     items.add(MessageItem(
         "${profileData.firstName} ${profileData.secondName}", "Name"));
+    items.add(MessageItem(profileData.summary, "Summary"));
     items.add(MessageItem(profileData.email, "e-mail"));
     items.add(MessageItem(profileData.headline, "Profile headline"));
     items.add(MessageItem(profileData.industry, "Industry"));

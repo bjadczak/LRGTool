@@ -146,7 +146,7 @@ class _EditProfileDataState extends State<EditProfileData> {
           _data.firstName,
           () => showDialog(
                 context: context,
-                builder: (context) => const Dialog("First Name"),
+                builder: (context) => Dialog("First Name", _data.firstName),
               ).then((valueFromDialog) {
                 if (valueFromDialog != null) {
                   setState(() {
@@ -160,7 +160,7 @@ class _EditProfileDataState extends State<EditProfileData> {
           _data.secondName,
           () => showDialog(
                 context: context,
-                builder: (context) => const Dialog("Second Name"),
+                builder: (context) => Dialog("Second Name", _data.secondName),
               ).then((valueFromDialog) {
                 if (valueFromDialog != null) {
                   setState(() {
@@ -170,11 +170,25 @@ class _EditProfileDataState extends State<EditProfileData> {
               })),
       const Divider(),
       getTile(
+          'Summary',
+          _data.summary,
+          () => showDialog(
+                context: context,
+                builder: (context) => Dialog("Summary", _data.summary),
+              ).then((valueFromDialog) {
+                if (valueFromDialog != null) {
+                  setState(() {
+                    _data.summary = valueFromDialog;
+                  });
+                }
+              })),
+      const Divider(),
+      getTile(
           'Headline',
           _data.headline,
           () => showDialog(
                 context: context,
-                builder: (context) => const Dialog("Headline"),
+                builder: (context) => Dialog("Headline", _data.headline),
               ).then((valueFromDialog) {
                 if (valueFromDialog != null) {
                   setState(() {
@@ -188,7 +202,7 @@ class _EditProfileDataState extends State<EditProfileData> {
           _data.industry,
           () => showDialog(
                 context: context,
-                builder: (context) => const Dialog("Industry"),
+                builder: (context) => Dialog("Industry", _data.industry),
               ).then((valueFromDialog) {
                 if (valueFromDialog != null) {
                   setState(() {
@@ -202,7 +216,7 @@ class _EditProfileDataState extends State<EditProfileData> {
           _data.location,
           () => showDialog(
                 context: context,
-                builder: (context) => const Dialog("Location"),
+                builder: (context) => Dialog("Location", _data.location),
               ).then((valueFromDialog) {
                 if (valueFromDialog != null) {
                   setState(() {
@@ -216,7 +230,7 @@ class _EditProfileDataState extends State<EditProfileData> {
           _data.email,
           () => showDialog(
                 context: context,
-                builder: (context) => const Dialog("e-mail"),
+                builder: (context) => Dialog("e-mail", _data.email),
               ).then((valueFromDialog) {
                 if (valueFromDialog != null) {
                   setState(() {
@@ -320,7 +334,7 @@ class _EditPositions extends State<EditPositions> {
           posData.companyName,
           () => showDialog(
             context: context,
-            builder: (context) => const Dialog("Company Name"),
+            builder: (context) => Dialog("Company Name", posData.companyName),
           ).then(
             (valueFromDialog) {
               if (valueFromDialog != null) {
@@ -342,7 +356,7 @@ class _EditPositions extends State<EditPositions> {
           posData.title,
           () => showDialog(
             context: context,
-            builder: (context) => const Dialog("Title"),
+            builder: (context) => Dialog("Title", posData.title),
           ).then(
             (valueFromDialog) {
               if (valueFromDialog != null) {
@@ -364,7 +378,7 @@ class _EditPositions extends State<EditPositions> {
           posData.description,
           () => showDialog(
             context: context,
-            builder: (context) => const Dialog("Description"),
+            builder: (context) => Dialog("Description", posData.description),
           ).then(
             (valueFromDialog) {
               if (valueFromDialog != null) {
@@ -386,7 +400,7 @@ class _EditPositions extends State<EditPositions> {
           posData.location,
           () => showDialog(
             context: context,
-            builder: (context) => const Dialog("Location"),
+            builder: (context) => Dialog("Location", posData.location),
           ).then(
             (valueFromDialog) {
               if (valueFromDialog != null) {
@@ -531,7 +545,7 @@ class _EditEducations extends State<EditEducations> {
           eduData.schoolName,
           () => showDialog(
             context: context,
-            builder: (context) => const Dialog("School Name"),
+            builder: (context) => Dialog("School Name", eduData.schoolName),
           ).then(
             (valueFromDialog) {
               if (valueFromDialog != null) {
@@ -553,7 +567,7 @@ class _EditEducations extends State<EditEducations> {
           eduData.degree,
           () => showDialog(
             context: context,
-            builder: (context) => const Dialog("Degree"),
+            builder: (context) => Dialog("Degree", eduData.degree),
           ).then(
             (valueFromDialog) {
               if (valueFromDialog != null) {
@@ -575,7 +589,7 @@ class _EditEducations extends State<EditEducations> {
           eduData.course,
           () => showDialog(
             context: context,
-            builder: (context) => const Dialog("Course"),
+            builder: (context) => Dialog("Course", eduData.course),
           ).then(
             (valueFromDialog) {
               if (valueFromDialog != null) {
@@ -667,7 +681,7 @@ class _EditSkills extends State<EditSkills> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: const Text('Edit Skills'),
         leading: BackButton(
           onPressed: () => Navigator.pop(context, _data),
         ),
@@ -682,7 +696,7 @@ class _EditSkills extends State<EditSkills> {
         child: const Icon(Icons.plus_one),
         onPressed: () => showDialog(
           context: context,
-          builder: (context) => const Dialog("New Skill"),
+          builder: (context) => const Dialog("New Skill", ""),
         ).then(
           (valueFromDialog) {
             if (valueFromDialog != null) {
@@ -728,7 +742,7 @@ class _EditSkills extends State<EditSkills> {
         title: Center(child: Text(skillData.skill)),
         onTap: () => showDialog(
           context: context,
-          builder: (context) => const Dialog("Skill"),
+          builder: (context) => Dialog("Skill", skillData.skill),
         ).then(
           (valueFromDialog) {
             if (valueFromDialog != null) {
@@ -755,18 +769,22 @@ class Dialog extends StatefulWidget {
   State<Dialog> createState() => _DialogState();
 
   final String field;
+  final String? content;
 
-  const Dialog(this.field, {super.key});
+  const Dialog(this.field, this.content, {super.key});
 }
 
 class _DialogState extends State<Dialog> {
   String field = "";
   String content = "";
+  late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
     field = widget.field;
+    content = widget.content ?? "";
+    _controller = new TextEditingController(text: content);
   }
 
   @override
@@ -775,6 +793,7 @@ class _DialogState extends State<Dialog> {
       title: Text(field),
       content: TextField(
         maxLines: null,
+        controller: _controller,
         onChanged: (value) => setState(() {
           content = value;
         }),
