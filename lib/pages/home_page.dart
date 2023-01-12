@@ -31,12 +31,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _userUid() {
-    return Text(user?.email ?? 'User email');
+    return Text(user?.email ?? 'You are not logged in');
   }
 
   Widget _signOutButton() {
     return ElevatedButton(
-      onPressed: signOut,
+      onPressed: () {
+        if (user == null) {
+          Navigator.pop(context);
+        } else {
+          signOut();
+        }
+      },
       child: const Text('Sign Out'),
     );
   }

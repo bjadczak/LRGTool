@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lrgtool/auth.dart';
+import 'package:lrgtool/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -100,6 +101,17 @@ class _LoginPageState extends State<LoginPage> {
             _errorMessage(),
             _submitButton(),
             _loginOrRegisterButton(),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
+                });
+              },
+              child: const Text('Offline'),
+            ),
           ],
         ),
       ),
