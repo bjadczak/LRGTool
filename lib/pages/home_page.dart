@@ -53,6 +53,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: _title(),
       ),
+      drawer: NavigationDrawer(),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -177,6 +178,90 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(
           builder: (context) => CreatePDF(_cvData ?? CvData.empty())),
+    );
+  }
+}
+
+class NavigationDrawer extends StatelessWidget {
+  const NavigationDrawer({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            buildHeader(context),
+            buildMenuItems(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildHeader(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 24,
+        bottom: 18,
+      ),
+      color: Theme.of(context).primaryColor,
+      child: Column(
+        children: [
+          const Text("Logged on as"),
+          Text(Auth().currentUser?.email ?? "No user loged in"),
+        ],
+      ),
+    );
+  }
+
+  Widget buildMenuItems(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(24),
+      child: Wrap(
+        runSpacing: 16,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.folder_zip),
+            title: const Text("Load data from Zip"),
+            onTap: () => {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text("Edit Data"),
+            onTap: () => {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.picture_as_pdf),
+            title: const Text("generate PDF"),
+            onTap: () => {},
+          ),
+          const Divider(
+            color: Colors.black54,
+          ),
+          ListTile(
+            leading: const Icon(Icons.upload),
+            title: const Text("Upload current CV"),
+            onTap: () => {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.download),
+            title: const Text("Download CVs from database"),
+            onTap: () => {},
+          ),
+          const Divider(
+            color: Colors.black54,
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text("Sign out"),
+            onTap: () => {},
+          ),
+        ],
+      ),
     );
   }
 }
