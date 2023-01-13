@@ -101,6 +101,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void setNewCvData(CvData? newData) {
+    setState(() {
+      if (newData?.isEmpty ?? true) {
+        _cvData = null;
+      } else {
+        _cvData = newData;
+      }
+    });
+  }
+
+  void setNullData() {
+    _cvData = null;
+  }
+
   Future<void> launchEditData(BuildContext context) async {
     final result = await Navigator.push(
       context,
@@ -109,13 +123,7 @@ class _HomePageState extends State<HomePage> {
 
     if (!mounted) return;
 
-    setState(() {
-      if (result?.isEmpty ?? true) {
-        _cvData = null;
-      } else {
-        _cvData = result;
-      }
-    });
+    setNewCvData(result);
   }
 
   ElevatedButton loadFromZipOrClear(BuildContext context) {
@@ -155,9 +163,7 @@ class _HomePageState extends State<HomePage> {
 
     if (!mounted) return;
 
-    setState(() {
-      _cvData = result;
-    });
+    setNewCvData(result);
   }
 
   Future<void> launchLoadingFromdatabase(BuildContext context) async {
@@ -168,9 +174,7 @@ class _HomePageState extends State<HomePage> {
 
     if (!mounted) return;
 
-    setState(() {
-      _cvData = result;
-    });
+    setNewCvData(result);
   }
 
   Future<void> launchCreatePdfScreen(BuildContext context) async {
@@ -186,6 +190,9 @@ class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer({
     Key? key,
   }) : super(key: key);
+
+  static _HomePageState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_HomePageState>();
 
   @override
   Widget build(BuildContext context) {
@@ -210,12 +217,84 @@ class NavigationDrawer extends StatelessWidget {
       ),
       color: Theme.of(context).primaryColor,
       child: Column(
-        children: [
-          const Text("Logged on as"),
-          Text(Auth().currentUser?.email ?? "No user loged in"),
-        ],
+        children: Auth().currentUser != null
+            ? [
+                const Text("Logged on as"),
+                Text(Auth().currentUser?.email ?? "No user loged in"),
+              ]
+            : [
+                const Text("Offline mode"),
+              ],
       ),
     );
+  }
+
+  Future<void> launchEditData(BuildContext context) async {
+    var state = of(context);
+    var cvData = state?._cvData ?? CvData.empty();
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditData(cvData)),
+    ) as CvData?;
+
+    state?.setNewCvData(result);
+  }
+
+  Future<void> launchLoadingFromZip(BuildContext context) async {
+    var state = of(context);
+    var cvData = state?._cvData;
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoadDataFromZip(cvData)),
+    ) as CvData?;
+
+    state?.setNewCvData(result);
+  }
+
+  Future<void> launchLoadingFromdatabase(BuildContext context) async {
+    var state = of(context);
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LookThroughFetchedCVs()),
+    ) as CvData?;
+
+    state?.setNewCvData(result);
+  }
+
+  Future<void> launchCreatePdfScreen(BuildContext context) async {
+    var state = of(context);
+    var cvData = state?._cvData ?? CvData.empty();
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CreatePDF(cvData)),
+    ) as CvData?;
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    Auth().currentUser != null
+        ? await Auth().signOut()
+        : Navigator.pop(context);
+  }
+
+  ListTile loadFromZipOrClear(BuildContext context) {
+    var state = of(context);
+    return state?._cvData == null
+        ? ListTile(
+            enabled: !kIsWeb,
+            leading: const Icon(Icons.folder_zip),
+            title: const Text("Load data from Zip"),
+            onTap: () {
+              launchLoadingFromZip(context);
+            },
+          )
+        : ListTile(
+            leading: const Icon(Icons.clear),
+            title: const Text("Clear data"),
+            onTap: () {
+              state?.setNullData();
+            },
+          );
   }
 
   Widget buildMenuItems(BuildContext context) {
@@ -224,20 +303,16 @@ class NavigationDrawer extends StatelessWidget {
       child: Wrap(
         runSpacing: 16,
         children: [
-          ListTile(
-            leading: const Icon(Icons.folder_zip),
-            title: const Text("Load data from Zip"),
-            onTap: () => {},
-          ),
+          loadFromZipOrClear(context),
           ListTile(
             leading: const Icon(Icons.edit),
             title: const Text("Edit Data"),
-            onTap: () => {},
+            onTap: () => {launchEditData(context)},
           ),
           ListTile(
             leading: const Icon(Icons.picture_as_pdf),
             title: const Text("generate PDF"),
-            onTap: () => {},
+            onTap: () => {launchCreatePdfScreen(context)},
           ),
           const Divider(
             color: Colors.black54,
@@ -245,12 +320,15 @@ class NavigationDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.upload),
             title: const Text("Upload current CV"),
-            onTap: () => {},
+            onTap: () => {
+              DatabaseHandler().createUser(Auth().currentUser?.uid ?? "",
+                  of(context)?._cvData ?? CvData.empty())
+            },
           ),
           ListTile(
             leading: const Icon(Icons.download),
             title: const Text("Download CVs from database"),
-            onTap: () => {},
+            onTap: () => {launchLoadingFromdatabase(context)},
           ),
           const Divider(
             color: Colors.black54,
@@ -258,7 +336,7 @@ class NavigationDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text("Sign out"),
-            onTap: () => {},
+            onTap: () => {signOut(context)},
           ),
         ],
       ),
