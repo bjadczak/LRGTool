@@ -26,18 +26,25 @@ class _LookThroughFetchedCVsState extends State<LookThroughFetchedCVs> {
         title: const Text("My CVs"),
       ),
       body: Center(
-        child: ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return ListTile(
-              title: Text("CV number: ${index + 1}"),
-              subtitle: Text("Created on ${item.timeOfCreation}"),
-              onTap: () => setState(() {
-                Navigator.pop(context, item);
-              }),
-            );
+        child: RefreshIndicator(
+          onRefresh: () async {
+            DatabaseHandler()
+                .readCV(Auth().currentUser?.uid ?? "")
+                .then((value) => setState(() => items = value));
           },
+          child: ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return ListTile(
+                title: Text("CV number: ${index + 1}"),
+                subtitle: Text("Created on ${item.timeOfCreation}"),
+                onTap: () => setState(() {
+                  Navigator.pop(context, item);
+                }),
+              );
+            },
+          ),
         ),
       ),
     );
