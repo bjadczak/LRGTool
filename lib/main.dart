@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:lrgtool/linkedin_data_structs.dart';
+import 'package:lrgtool/misc/linkedin_data_structs.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
@@ -9,14 +9,14 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'misc/firebase_options.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-import 'load_data_screen.dart';
-import 'edit_data_screen.dart';
+import 'pages/load_data_from_cv_page.dart';
+import 'pages/edit_data_page.dart';
 
-import 'package:lrgtool/widget_tree.dart';
+import 'package:lrgtool/misc/widget_tree.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

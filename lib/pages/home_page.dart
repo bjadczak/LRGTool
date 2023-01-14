@@ -1,16 +1,16 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lrgtool/auth.dart';
+import 'package:lrgtool/misc/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lrgtool/create_pdf_screen.dart';
-import 'package:lrgtool/database_handler.dart';
-import 'package:lrgtool/look_through_my_cv.dart';
+import 'package:lrgtool/pages/create_pdf_page.dart';
+import 'package:lrgtool/misc/database_handler.dart';
+import 'package:lrgtool/pages/look_through_my_cv_page.dart';
 import 'package:lrgtool/pages_content/home_page_content.dart';
 
-import '../load_data_screen.dart';
-import '../edit_data_screen.dart';
-import 'package:lrgtool/linkedin_data_structs.dart';
+import 'load_data_from_cv_page.dart';
+import 'edit_data_page.dart';
+import 'package:lrgtool/misc/linkedin_data_structs.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'dart:io';
 
-import 'linkedin_data_structs.dart';
+import '../misc/linkedin_data_structs.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 

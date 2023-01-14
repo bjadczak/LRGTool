@@ -1,4 +1,4 @@
-import 'package:lrgtool/auth.dart';
+import 'package:lrgtool/misc/auth.dart';
 import 'package:lrgtool/pages/home_page.dart';
 import 'package:lrgtool/pages/login_register_page.dart';
 import 'package:flutter/material.dart';

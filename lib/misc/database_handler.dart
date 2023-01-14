@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lrgtool/linkedin_data_structs.dart';
+import 'package:lrgtool/misc/linkedin_data_structs.dart';
 
 class DatabaseHandler {
   Future<List<CvData>> readCV(String uid) async {

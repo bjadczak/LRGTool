@@ -1,4 +1,4 @@
-import 'package:lrgtool/linkedin_data_structs.dart';
+import 'package:lrgtool/misc/linkedin_data_structs.dart';
 import 'package:flutter/material.dart';
 
 class EditData extends StatefulWidget {

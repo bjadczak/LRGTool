@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lrgtool/auth.dart';
-import 'package:lrgtool/database_handler.dart';
-import 'package:lrgtool/linkedin_data_structs.dart';
+import 'package:lrgtool/misc/auth.dart';
+import 'package:lrgtool/misc/database_handler.dart';
+import 'package:lrgtool/misc/linkedin_data_structs.dart';
 
 class LookThroughFetchedCVs extends StatefulWidget {
   @override
