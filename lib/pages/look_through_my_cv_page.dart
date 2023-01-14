@@ -4,6 +4,8 @@ import 'package:lrgtool/misc/database_handler.dart';
 import 'package:lrgtool/misc/linkedin_data_structs.dart';
 
 class LookThroughFetchedCVs extends StatefulWidget {
+  const LookThroughFetchedCVs({super.key});
+
   @override
   State<LookThroughFetchedCVs> createState() => _LookThroughFetchedCVsState();
 }

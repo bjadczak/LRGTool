@@ -11,8 +11,8 @@ class HomePageContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text("Main page"),
+        children: const <Widget>[
+          Text("Main page"),
         ],
       ),
     );

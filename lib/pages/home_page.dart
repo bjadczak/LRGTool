@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lrgtool/misc/auth.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +63,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class NavigationDrawer extends StatefulWidget {
-  NavigationDrawer(
+  const NavigationDrawer(
     this.setDataNull,
     this.setData,
     this.getCurrentData,
@@ -73,10 +71,10 @@ class NavigationDrawer extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
-  void Function() setDataNull;
-  void Function(CvData?) setData;
-  CvData? Function() getCurrentData;
-  void Function(String) setCvDataName;
+  final void Function() setDataNull;
+  final void Function(CvData?) setData;
+  final CvData? Function() getCurrentData;
+  final void Function(String) setCvDataName;
 
   @override
   State<NavigationDrawer> createState() => _NavigationDrawerState();
@@ -158,7 +156,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LookThroughFetchedCVs()),
+      MaterialPageRoute(builder: (context) => const LookThroughFetchedCVs()),
     ) as CvData?;
 
     if (result != null) setData(result);
@@ -281,7 +279,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         if (valueFromDialog != null) {
           CvData potential = await DatabaseHandler()
               .findWithName(Auth().currentUser?.uid ?? "", valueFromDialog);
-
+          if (!mounted) return;
           if (potential.isEmpty) {
             sendCvToDatabase(
                 context, valueFromDialog, getCurrentData, setCvDataName);

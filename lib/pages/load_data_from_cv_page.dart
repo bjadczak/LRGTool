@@ -1,6 +1,6 @@
 import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:io';
@@ -80,8 +80,10 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
 
       extractArchiveToDisk(archive, destinationDir.path);
     } on FileSystemException catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
       return null;
     }
     try {
@@ -96,8 +98,10 @@ class _LoadDataFromZipState extends State<LoadDataFromZip> {
           )
           .path);
     } on StateError catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
       return null;
     }
   }

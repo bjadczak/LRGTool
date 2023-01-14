@@ -1,10 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'package:json_annotation/json_annotation.dart';
+// ignore: depend_on_referenced_packages
+import 'package:json_annotation/json_annotation.dart' show JsonSerializable;
 part 'linkedin_data_structs.g.dart';
 
 @JsonSerializable(constructor: "_", explicitToJson: true)
@@ -38,19 +40,24 @@ class PositionData {
         start = DateFormat("yyyy").parse(startedOn);
       }
     } on FormatException catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
+
       start = null;
     }
     try {
       if (finishedOn.length > 4) {
         finish = DateFormat("MMM yyyy").parse(finishedOn);
-      } else if (finishedOn.length > 0) {
+      } else if (finishedOn.isNotEmpty) {
         finish = DateFormat("yyyy").parse(finishedOn);
       }
     } on FormatException catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
       finish = null;
     }
     return PositionData._(
@@ -61,7 +68,9 @@ class PositionData {
   Map<String, dynamic> toJson() => _$PositionDataToJson(this);
 
   void debugPrint() {
-    print(toJson());
+    if (kDebugMode) {
+      print(toJson());
+    }
   }
 }
 
@@ -101,7 +110,9 @@ class ProfileData {
   Map<String, dynamic> toJson() => _$ProfileDataToJson(this);
 
   void debugPrint() {
-    print(toJson());
+    if (kDebugMode) {
+      print(toJson());
+    }
   }
 }
 
@@ -134,19 +145,24 @@ class EducationData {
         start = DateFormat("yyyy").parse(startedOn);
       }
     } on FormatException catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
+
       start = null;
     }
     try {
       if (finishedOn.length > 4) {
         finish = DateFormat("MMM yyyy").parse(finishedOn);
-      } else if (finishedOn.length > 0) {
+      } else if (finishedOn.isNotEmpty) {
         finish = DateFormat("yyyy").parse(finishedOn);
       }
     } on FormatException catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
       finish = null;
     }
 
@@ -158,7 +174,9 @@ class EducationData {
   Map<String, dynamic> toJson() => _$EducationDataToJson(this);
 
   void debugPrint() {
-    print(toJson());
+    if (kDebugMode) {
+      print(toJson());
+    }
   }
 }
 
@@ -174,7 +192,9 @@ class SkillData {
   Map<String, dynamic> toJson() => _$SkillDataToJson(this);
 
   void debugPrint() {
-    print(toJson());
+    if (kDebugMode) {
+      print(toJson());
+    }
   }
 
   @override
@@ -224,7 +244,9 @@ class CvData {
   Map<String, dynamic> toJson() => _$CvDataToJson(this);
 
   void debugPrintJson() {
-    print(toJson());
+    if (kDebugMode) {
+      print(toJson());
+    }
   }
 
   @override
@@ -235,6 +257,9 @@ class CvData {
         other.positions == positions &&
         other.profileData == profileData;
   }
+
+  @override
+  int get hashCode => Object.hash(positions, education, skills, profileData);
 
   bool get isEmpty {
     return positions.isEmpty &&
@@ -282,8 +307,10 @@ class CvData {
             .add(PositionData(row[0], row[1], row[2], row[3], row[4], row[5]));
       }
     } on Exception catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
     }
 
     return outData;
@@ -312,16 +339,20 @@ class CvData {
           orElse: () => [""],
         )[0];
       } on Exception catch (e, stacktrace) {
-        print('Exception: ' + e.toString());
-        print('Stacktrace: ' + stacktrace.toString());
+        if (kDebugMode) {
+          print('Exception: $e');
+          print('Stacktrace: $stacktrace');
+        }
         email = "";
       }
 
       outData =
           ProfileData(row[0], row[1], row[5], row[7], row[9], email, row[6]);
     } on Exception catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
       outData = ProfileData.empty();
     }
 
@@ -347,8 +378,10 @@ class CvData {
         outData.add(EducationData(row[0], row[1], row[2], row[4]));
       }
     } on Exception catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
     }
 
     return outData;
@@ -387,8 +420,10 @@ class CvData {
         }
       }
     } on Exception catch (e, stacktrace) {
-      print('Exception: ' + e.toString());
-      print('Stacktrace: ' + stacktrace.toString());
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
     }
 
     return outData;
