@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lrgtool/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lrgtool/create_pdf_screen.dart';
 import 'package:lrgtool/database_handler.dart';
 import 'package:lrgtool/look_through_my_cv.dart';
+import 'package:lrgtool/pages_content/home_page_content.dart';
 
 import '../load_data_screen.dart';
 import '../edit_data_screen.dart';
@@ -12,7 +15,7 @@ import 'package:lrgtool/linkedin_data_structs.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -22,29 +25,8 @@ class _HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
   CvData? _cvData;
 
-  Future<void> signOut() async {
-    await Auth().signOut();
-  }
-
   Widget _title() {
     return const Text('Firebase Auth');
-  }
-
-  Widget _userUid() {
-    return Text(user?.email ?? 'You are not logged in');
-  }
-
-  Widget _signOutButton() {
-    return ElevatedButton(
-      onPressed: () {
-        if (user == null) {
-          Navigator.pop(context);
-        } else {
-          signOut();
-        }
-      },
-      child: const Text('Sign Out'),
-    );
   }
 
   @override
@@ -53,51 +35,9 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: _title(),
       ),
-      drawer: NavigationDrawer(),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _userUid(),
-            _signOutButton(),
-            loadFromZipOrClear(context),
-            ElevatedButton(
-              child: Text(_cvData?.isEmpty ?? true
-                  ? "Insert data screen"
-                  : 'Edit data screen'),
-              onPressed: () {
-                launchEditData(context);
-              },
-            ),
-            ElevatedButton(
-              child: Text("Show UID"),
-              onPressed: () {
-                print(Auth().currentUser?.uid ?? "No user loged in");
-              },
-            ),
-            ElevatedButton(
-              child: Text("Upload CV"),
-              onPressed: () {
-                DatabaseHandler().createUser(
-                    Auth().currentUser?.uid ?? "", _cvData ?? CvData.empty());
-              },
-            ),
-            ElevatedButton(
-              child: Text("Load CV from datebase"),
-              onPressed: () {
-                launchLoadingFromdatabase(context);
-              },
-            ),
-            ElevatedButton(
-              child: Text("Create PDF"),
-              onPressed: () {
-                launchCreatePdfScreen(context);
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: NavigationDrawer(
+          setNullData, setNewCvData, getCurrentCvData, setCvDataName),
+      body: HomePageContent(_cvData),
     );
   }
 
@@ -115,84 +55,46 @@ class _HomePageState extends State<HomePage> {
     _cvData = null;
   }
 
-  Future<void> launchEditData(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => EditData(_cvData)),
-    ) as CvData?;
-
-    if (!mounted) return;
-
-    setNewCvData(result);
+  CvData? getCurrentCvData() {
+    return _cvData;
   }
 
-  ElevatedButton loadFromZipOrClear(BuildContext context) {
-    const snackBar = SnackBar(
-      content: Text('Unavilable on web'),
-    );
-
-    return _cvData == null
-        ? kIsWeb
-            ? ElevatedButton(
-                child: const Text('Load data from Zip'),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                },
-              )
-            : ElevatedButton(
-                child: const Text('Load data from Zip'),
-                onPressed: () {
-                  launchLoadingFromZip(context);
-                },
-              )
-        : ElevatedButton(
-            child: const Text('Clear data'),
-            onPressed: () {
-              setState(() {
-                _cvData = null;
-              });
-            },
-          );
-  }
-
-  Future<void> launchLoadingFromZip(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoadDataFromZip(_cvData)),
-    ) as CvData?;
-
-    if (!mounted) return;
-
-    setNewCvData(result);
-  }
-
-  Future<void> launchLoadingFromdatabase(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LookThroughFetchedCVs()),
-    ) as CvData?;
-
-    if (!mounted) return;
-
-    setNewCvData(result);
-  }
-
-  Future<void> launchCreatePdfScreen(BuildContext context) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => CreatePDF(_cvData ?? CvData.empty())),
-    );
+  void setCvDataName(String newName) {
+    _cvData?.nameOfCv = newName;
   }
 }
 
-class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer({
+class NavigationDrawer extends StatefulWidget {
+  NavigationDrawer(
+    this.setDataNull,
+    this.setData,
+    this.getCurrentData,
+    this.setCvDataName, {
     Key? key,
   }) : super(key: key);
 
-  static _HomePageState? of(BuildContext context) =>
-      context.findAncestorStateOfType<_HomePageState>();
+  void Function() setDataNull;
+  void Function(CvData?) setData;
+  CvData? Function() getCurrentData;
+  void Function(String) setCvDataName;
+
+  @override
+  State<NavigationDrawer> createState() => _NavigationDrawerState();
+}
+
+class _NavigationDrawerState extends State<NavigationDrawer> {
+  late void Function() setDataNull;
+  late void Function(CvData?) setData;
+  late CvData? Function() getCurrentData;
+  late void Function(String) setCvDataName;
+  @override
+  void initState() {
+    setDataNull = widget.setDataNull;
+    setData = widget.setData;
+    getCurrentData = widget.getCurrentData;
+    setCvDataName = widget.setCvDataName;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -230,41 +132,41 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Future<void> launchEditData(BuildContext context) async {
-    var state = of(context);
-    var cvData = state?._cvData ?? CvData.empty();
+    Navigator.pop(context);
+    var cvData = getCurrentData() ?? CvData.empty();
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EditData(cvData)),
     ) as CvData?;
 
-    state?.setNewCvData(result);
+    setData(result);
   }
 
   Future<void> launchLoadingFromZip(BuildContext context) async {
-    var state = of(context);
-    var cvData = state?._cvData;
+    Navigator.pop(context);
+    var cvData = getCurrentData();
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => LoadDataFromZip(cvData)),
     ) as CvData?;
 
-    state?.setNewCvData(result);
+    setData(result);
   }
 
   Future<void> launchLoadingFromdatabase(BuildContext context) async {
-    var state = of(context);
+    Navigator.pop(context);
 
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => LookThroughFetchedCVs()),
     ) as CvData?;
 
-    state?.setNewCvData(result);
+    if (result != null) setData(result);
   }
 
   Future<void> launchCreatePdfScreen(BuildContext context) async {
-    var state = of(context);
-    var cvData = state?._cvData ?? CvData.empty();
+    Navigator.pop(context);
+    var cvData = getCurrentData() ?? CvData.empty();
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CreatePDF(cvData)),
@@ -272,14 +174,17 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Future<void> signOut(BuildContext context) async {
-    Auth().currentUser != null
-        ? await Auth().signOut()
-        : Navigator.pop(context);
+    if (Auth().currentUser != null) {
+      Navigator.pop(context);
+      await Auth().signOut();
+    } else {
+      Navigator.pop(context);
+      Navigator.popUntil(context, (route) => route.isFirst);
+    }
   }
 
   ListTile loadFromZipOrClear(BuildContext context) {
-    var state = of(context);
-    return state?._cvData == null
+    return getCurrentData() == null
         ? ListTile(
             enabled: !kIsWeb,
             leading: const Icon(Icons.folder_zip),
@@ -292,7 +197,8 @@ class NavigationDrawer extends StatelessWidget {
             leading: const Icon(Icons.clear),
             title: const Text("Clear data"),
             onTap: () {
-              state?.setNullData();
+              setDataNull();
+              setState(() {});
             },
           );
   }
@@ -318,14 +224,14 @@ class NavigationDrawer extends StatelessWidget {
             color: Colors.black54,
           ),
           ListTile(
+            enabled: Auth().currentUser != null,
             leading: const Icon(Icons.upload),
             title: const Text("Upload current CV"),
-            onTap: () => {
-              DatabaseHandler().createUser(Auth().currentUser?.uid ?? "",
-                  of(context)?._cvData ?? CvData.empty())
-            },
+            onTap: () =>
+                {showUploadDilog(context, getCurrentData, setCvDataName)},
           ),
           ListTile(
+            enabled: Auth().currentUser != null,
             leading: const Icon(Icons.download),
             title: const Text("Download CVs from database"),
             onTap: () => {launchLoadingFromdatabase(context)},
@@ -341,5 +247,92 @@ class NavigationDrawer extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> showUploadDilog(BuildContext context,
+      CvData? Function() getCurrentData, void Function(String) setCvDataName) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        var content = getCurrentData()?.nameOfCv ?? "";
+        return AlertDialog(
+          title: const Text("Upload CV"),
+          content: TextField(
+            maxLines: 1,
+            controller: TextEditingController(text: content),
+            onChanged: (value) => content = value,
+          ),
+          actions: [
+            ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel')),
+            ElevatedButton(
+                onPressed: () {
+                  if (content.isNotEmpty) {
+                    Navigator.pop(context, content);
+                  } else {}
+                },
+                child: const Text('Confirm')),
+          ],
+        );
+      },
+    ).then(
+      (valueFromDialog) async {
+        if (valueFromDialog != null) {
+          CvData potential = await DatabaseHandler()
+              .findWithName(Auth().currentUser?.uid ?? "", valueFromDialog);
+
+          if (potential.isEmpty) {
+            sendCvToDatabase(
+                context, valueFromDialog, getCurrentData, setCvDataName);
+          } else {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text("Warning!"),
+                  content: Text(
+                      "You are trying to overwrite CV from ${potential.timeOfCreation}"),
+                  actions: [
+                    ElevatedButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Cancel')),
+                    ElevatedButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Yes, overwrite')),
+                  ],
+                );
+              },
+            ).then((value) {
+              if (value) {
+                sendCvToDatabase(
+                    context, valueFromDialog, getCurrentData, setCvDataName);
+              }
+            });
+          }
+        }
+      },
+    );
+  }
+
+  void sendCvToDatabase(BuildContext context, valueFromDialog,
+      CvData? Function() getCurrentData, void Function(String) setCvDataName) {
+    if (getCurrentData() == null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+            title: const Text("Warning!"),
+            content: const Text("Can't upload empty CV, first add data."),
+            actions: [
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK')),
+            ]),
+      );
+    } else {
+      setCvDataName(valueFromDialog);
+      DatabaseHandler().createUser(
+          Auth().currentUser?.uid ?? "", getCurrentData() ?? CvData.empty());
+    }
   }
 }

@@ -784,7 +784,7 @@ class _DialogState extends State<Dialog> {
     super.initState();
     field = widget.field;
     content = widget.content ?? "";
-    _controller = new TextEditingController(text: content);
+    _controller = TextEditingController(text: content);
   }
 
   @override

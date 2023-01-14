@@ -37,11 +37,23 @@ class _LookThroughFetchedCVsState extends State<LookThroughFetchedCVs> {
             itemBuilder: (context, index) {
               final item = items[index];
               return ListTile(
-                title: Text("CV number: ${index + 1}"),
-                subtitle: Text("Created on ${item.timeOfCreation}"),
+                title: Text("CV ${item.nameOfCv}"),
+                subtitle: Text("Created on ${item.formatedTimeOfCreation}"),
                 onTap: () => setState(() {
                   Navigator.pop(context, item);
                 }),
+                trailing: ElevatedButton.icon(
+                  onPressed: () {
+                    DatabaseHandler().removeCv(Auth().currentUser?.uid ?? "",
+                        item.timeOfCreation.toString());
+                    DatabaseHandler()
+                        .readCV(Auth().currentUser?.uid ?? "")
+                        .then((value) => setState(() => items = value));
+                  },
+                  icon:
+                      const Icon(Icons.delete), //icon data for elevated button
+                  label: const Text("Delete this CV"),
+                ),
               );
             },
           ),

@@ -1,0 +1,20 @@
+import 'package:flutter/material.dart';
+import 'package:lrgtool/linkedin_data_structs.dart';
+
+class HomePageContent extends StatelessWidget {
+  const HomePageContent(this.data, {super.key});
+  final CvData? data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text("Main page"),
+        ],
+      ),
+    );
+  }
+}

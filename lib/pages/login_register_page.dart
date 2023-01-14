@@ -53,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
   ) {
     return TextField(
       controller: controller,
+      obscureText: controller == _controllerPassword,
       decoration: InputDecoration(
         labelText: title,
       ),
