@@ -456,8 +456,12 @@ class CvData {
         .convert(await csvFile.readAsString());
   }
 
-  List<ListItem> getListOfData() {
+  List<ListItem> getListOfData({bool forHomePage = false}) {
     List<ListItem> items = [];
+    if (forHomePage) {
+      items.add(HeadingItem("CV Data"));
+      items.add(SubHeadingItem(nameOfCv, "Title of CV"));
+    }
 
     // Add profile data
     items.add(HeadingItem("Profile data"));

@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
         items = [];
       } else {
         _cvData = newData;
-        items = _cvData?.getListOfData() ?? [];
+        items = _cvData?.getListOfData(forHomePage: true) ?? [];
       }
     });
   }
