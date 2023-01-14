@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:lrgtool/pages/create_pdf_page.dart';
 import 'package:lrgtool/misc/database_handler.dart';
 import 'package:lrgtool/pages/look_through_my_cv_page.dart';
-import 'package:lrgtool/pages_content/home_page_content.dart';
 
 import 'load_data_from_cv_page.dart';
 import 'edit_data_page.dart';
@@ -22,9 +21,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
   CvData? _cvData;
+  List<ListItem> items = [];
 
   Widget _title() {
-    return const Text('Firebase Auth');
+    return const Text('Home page');
   }
 
   @override
@@ -35,7 +35,18 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: NavigationDrawer(
           setNullData, setNewCvData, getCurrentCvData, setCvDataName),
-      body: HomePageContent(_cvData),
+      body: Center(
+        child: ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index];
+            return ListTile(
+              title: item.buildTitle(context),
+              subtitle: item.buildSubtitle(context),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -43,14 +54,19 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       if (newData?.isEmpty ?? true) {
         _cvData = null;
+        items = [];
       } else {
         _cvData = newData;
+        items = _cvData?.getListOfData() ?? [];
       }
     });
   }
 
   void setNullData() {
-    _cvData = null;
+    setState(() {
+      _cvData = null;
+      items = [];
+    });
   }
 
   CvData? getCurrentCvData() {
@@ -58,7 +74,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void setCvDataName(String newName) {
-    _cvData?.nameOfCv = newName;
+    setState(() {
+      _cvData?.nameOfCv = newName;
+    });
   }
 }
 
@@ -119,11 +137,32 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
       child: Column(
         children: Auth().currentUser != null
             ? [
-                const Text("Logged on as"),
-                Text(Auth().currentUser?.email ?? "No user loged in"),
+                const Text(
+                  "Logged on as",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  Auth().currentUser?.email ?? "No user loged in",
+                  style: const TextStyle(
+                    color: Colors.white54,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ]
             : [
-                const Text("Offline mode"),
+                const Text(
+                  "Offline mode",
+                  style: TextStyle(
+                    color: Colors.white54,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
       ),
     );

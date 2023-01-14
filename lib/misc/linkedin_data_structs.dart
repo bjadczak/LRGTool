@@ -324,37 +324,59 @@ class CvData {
       return ProfileData.empty();
     }
     ProfileData outData;
+    String email = "";
+    String firstName, secondName, headline, industry, location, summary;
     try {
       List<List<dynamic>> rowsAsListOfValuesProfile =
           await _getListFromCSV(profileCsv);
+
+      // First line is an header
+      var row = rowsAsListOfValuesProfile[1];
+      firstName = row[0];
+      secondName = row[1];
+      headline = row[5];
+      industry = row[7];
+      location = row[9];
+      summary = row[6];
+    } on Exception catch (e, stacktrace) {
+      if (kDebugMode) {
+        print('Exception: $e');
+        print('Stacktrace: $stacktrace');
+      }
+      firstName = "";
+      secondName = "";
+      headline = "";
+      industry = "";
+      location = "";
+      summary = "";
+    }
+    try {
       List<List<dynamic>> rowsAsListOfValuesEmail =
           await _getListFromCSV(emailCsv);
 
       // First line is an header
-      var row = rowsAsListOfValuesProfile[1];
-      String email;
       try {
         email = rowsAsListOfValuesEmail.firstWhere(
+          // Take firest email addres that is valid and set as default
           (element) => element[1] == "Yes" && element[2] == "Yes",
           orElse: () => [""],
         )[0];
-      } on Exception catch (e, stacktrace) {
+      } on StateError catch (e, stacktrace) {
         if (kDebugMode) {
           print('Exception: $e');
           print('Stacktrace: $stacktrace');
         }
         email = "";
       }
-
-      outData =
-          ProfileData(row[0], row[1], row[5], row[7], row[9], email, row[6]);
     } on Exception catch (e, stacktrace) {
       if (kDebugMode) {
         print('Exception: $e');
         print('Stacktrace: $stacktrace');
       }
-      outData = ProfileData.empty();
     }
+
+    outData = ProfileData(
+        firstName, secondName, headline, industry, location, email, summary);
 
     return outData;
   }
