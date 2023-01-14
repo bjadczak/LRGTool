@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lrgtool/auth.dart';
-import 'package:lrgtool/database_handler.dart';
-import 'package:lrgtool/linkedin_data_structs.dart';
+import 'package:lrgtool/misc/auth.dart';
+import 'package:lrgtool/misc/database_handler.dart';
+import 'package:lrgtool/misc/linkedin_data_structs.dart';
 
 class LookThroughFetchedCVs extends StatefulWidget {
   @override
@@ -37,11 +37,23 @@ class _LookThroughFetchedCVsState extends State<LookThroughFetchedCVs> {
             itemBuilder: (context, index) {
               final item = items[index];
               return ListTile(
-                title: Text("CV number: ${index + 1}"),
-                subtitle: Text("Created on ${item.timeOfCreation}"),
+                title: Text("CV ${item.nameOfCv}"),
+                subtitle: Text("Created on ${item.formatedTimeOfCreation}"),
                 onTap: () => setState(() {
                   Navigator.pop(context, item);
                 }),
+                trailing: ElevatedButton.icon(
+                  onPressed: () {
+                    DatabaseHandler().removeCv(Auth().currentUser?.uid ?? "",
+                        item.timeOfCreation.toString());
+                    DatabaseHandler()
+                        .readCV(Auth().currentUser?.uid ?? "")
+                        .then((value) => setState(() => items = value));
+                  },
+                  icon:
+                      const Icon(Icons.delete), //icon data for elevated button
+                  label: const Text("Delete this CV"),
+                ),
               );
             },
           ),

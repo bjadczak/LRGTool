@@ -194,23 +194,30 @@ class CvData {
   ProfileData profileData;
   DateTime timeOfCreation;
 
+  String nameOfCv;
+
   CvData._(this.positions, this.education, this.skills, this.profileData,
-      this.timeOfCreation);
+      this.timeOfCreation, this.nameOfCv);
 
   CvData.empty()
       : positions = [],
         education = [],
         skills = [],
         profileData = ProfileData.empty(),
-        timeOfCreation = DateTime.now();
+        timeOfCreation = DateTime.now(),
+        nameOfCv = "" {
+    nameOfCv = "Cv crated ${timeOfCreation.toString()}";
+  }
 
   static Future<CvData> create(Directory unpackedCsvFiles) async {
     var positions = await _parsePositions(unpackedCsvFiles);
     var profileData = await _parseProfile(unpackedCsvFiles);
     var education = await _parseEducation(unpackedCsvFiles);
     var skills = await _parseSkills(unpackedCsvFiles);
+    var timeOfCreation = DateTime.now();
 
-    return CvData._(positions, education, skills, profileData, DateTime.now());
+    return CvData._(positions, education, skills, profileData, timeOfCreation,
+        "Cv crated ${timeOfCreation.toString()}");
   }
 
   factory CvData.fromJson(Map<String, dynamic> json) => _$CvDataFromJson(json);
@@ -234,6 +241,12 @@ class CvData {
         education.isEmpty &&
         skills.isEmpty &&
         profileData.isEmpty;
+  }
+
+  String get formatedTimeOfCreation {
+    NumberFormat twoDigFormat = NumberFormat("00");
+    NumberFormat fourDigFormat = NumberFormat("00");
+    return "${twoDigFormat.format(timeOfCreation.day)}-${twoDigFormat.format(timeOfCreation.month)}-${fourDigFormat.format(timeOfCreation.year)} ${twoDigFormat.format(timeOfCreation.hour)}:${twoDigFormat.format(timeOfCreation.minute)}";
   }
 
   void debugPrint() {
