@@ -16,6 +16,8 @@ class _LoginPageState extends State<LoginPage> {
 
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerPasswordRepeat =
+      TextEditingController();
 
   Future<void> signInWithEmailAndPassword() async {
     try {
@@ -60,6 +62,32 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _passwordCreateEntryFiled() {
+    return TextFormField(
+      obscureText: true,
+      controller: _controllerPassword,
+      decoration: const InputDecoration(labelText: "password"),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Pleas enter password";
+        } else if (value != _controllerPasswordRepeat.text) {
+          return "Passwords do not match";
+        } else if (value.length < 6) {
+          return "Password needs to be at least 6 charachters";
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _passwordCreateRepeatEntryFiled() {
+    return TextField(
+      obscureText: true,
+      controller: _controllerPasswordRepeat,
+      decoration: const InputDecoration(labelText: "repeat password"),
+    );
+  }
+
   Widget _errorMessage() {
     return Text(errorMessage == '' ? '' : 'Humm ? $errorMessage');
   }
@@ -83,6 +111,49 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  List<Widget> _getLoginContent() {
+    return <Widget>[
+      _entryField('email', _controllerEmail),
+      _entryField('password', _controllerPassword),
+      _errorMessage(),
+      _submitButton(),
+      _loginOrRegisterButton(),
+      TextButton(
+        onPressed: () {
+          setState(() {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          });
+        },
+        child: const Text('Offline'),
+      ),
+    ];
+  }
+
+  List<Widget> _getRegisterContent() {
+    return <Widget>[
+      _entryField('email', _controllerEmail),
+      _passwordCreateEntryFiled(),
+      _passwordCreateRepeatEntryFiled(),
+      _errorMessage(),
+      _submitButton(),
+      _loginOrRegisterButton(),
+      TextButton(
+        onPressed: () {
+          setState(() {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          });
+        },
+        child: const Text('Offline'),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,24 +167,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _entryField('email', _controllerEmail),
-            _entryField('password', _controllerPassword),
-            _errorMessage(),
-            _submitButton(),
-            _loginOrRegisterButton(),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomePage()),
-                  );
-                });
-              },
-              child: const Text('Offline'),
-            ),
-          ],
+          children: isLogin ? _getLoginContent() : _getRegisterContent(),
         ),
       ),
     );
