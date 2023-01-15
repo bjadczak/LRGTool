@@ -16,7 +16,15 @@ class _LookThroughFetchedCVsState extends State<LookThroughFetchedCVs> {
   @override
   initState() {
     super.initState();
-    DatabaseHandler()
+    reloadData();
+  }
+
+  void removeItem(CvData remove) {
+    DatabaseHandler().removeCv(Auth().currentUser?.uid ?? "", remove.nameOfCv);
+  }
+
+  Future<void> reloadData() async {
+    await DatabaseHandler()
         .readCV(Auth().currentUser?.uid ?? "")
         .then((value) => setState(() => items = value));
   }
@@ -46,11 +54,8 @@ class _LookThroughFetchedCVsState extends State<LookThroughFetchedCVs> {
                 }),
                 trailing: ElevatedButton.icon(
                   onPressed: () {
-                    DatabaseHandler().removeCv(Auth().currentUser?.uid ?? "",
-                        item.timeOfCreation.toString());
-                    DatabaseHandler()
-                        .readCV(Auth().currentUser?.uid ?? "")
-                        .then((value) => setState(() => items = value));
+                    removeItem(item);
+                    reloadData();
                   },
                   icon:
                       const Icon(Icons.delete), //icon data for elevated button
