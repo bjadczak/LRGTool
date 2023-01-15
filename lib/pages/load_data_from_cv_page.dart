@@ -7,177 +7,85 @@ import 'dart:io';
 
 import '../misc/linkedin_data_structs.dart';
 
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+Future<Directory?> getFilesFromZip(File myZipData) async {
+  final appDataDir = Directory.systemTemp;
+  final destinationDir = Directory("${appDataDir.path}/unzip");
 
-class LoadDataFromZip extends StatefulWidget {
-  final CvData? _cvData;
+  if (destinationDir.existsSync()) {
+    destinationDir.deleteSync(recursive: true);
+  }
 
-  const LoadDataFromZip(CvData? cvData, {super.key}) : _cvData = cvData;
+  destinationDir.createSync();
 
-  @override
-  State<LoadDataFromZip> createState() => _LoadDataFromZipState();
+  try {
+    final bytes = myZipData.readAsBytesSync();
+    final archive = ZipDecoder().decodeBytes(bytes);
+
+    extractArchiveToDisk(archive, destinationDir.path);
+  } on FileSystemException catch (e, stacktrace) {
+    if (kDebugMode) {
+      print('Exception: $e');
+      print('Stacktrace: $stacktrace');
+    }
+    return null;
+  }
+  try {
+    return Directory(destinationDir
+        .listSync()
+        .firstWhere(
+          (element) => File("${element.path}/Profile.csv").existsSync(),
+          orElse: () => File("${destinationDir.path}/Profile.csv").existsSync()
+              ? destinationDir
+              : throw StateError("No element"),
+        )
+        .path);
+  } on StateError catch (e, stacktrace) {
+    if (kDebugMode) {
+      print('Exception: $e');
+      print('Stacktrace: $stacktrace');
+    }
+    return null;
+  }
 }
 
-class _LoadDataFromZipState extends State<LoadDataFromZip> {
-  final _appDataDir = Directory.systemTemp;
+Future<void> pickZipDataFile(
+    BuildContext context, Function(CvData) setData) async {
+  final FilePickerResult? result = await FilePicker.platform.pickFiles(
+    allowMultiple: false,
+    type: FileType.custom,
+    allowedExtensions: ['zip'],
+  );
+  if (result != null) {
+    String? zipFilePath;
+    if (kIsWeb) {
+      if (result.files.isNotEmpty) {
+        zipFilePath = result.files.first.name;
+      } else {
+        return;
+      }
+    } else {
+      zipFilePath = result.files.single.path;
+    }
 
-  List<ListItem> items = [];
-  bool _showClear = false;
-  CvData? _cvData;
-
-  @override
-  initState() {
-    super.initState();
-    _cvData = widget._cvData;
-    items = _cvData?.getListOfData() ?? [];
-    _showClear = _cvData != null;
-  }
-
-  Future<void> _pickZipDataFile(context) async {
-    final FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowMultiple: false,
-      type: FileType.custom,
-      allowedExtensions: ['zip'],
-    );
-
-    if (result != null) {
-      String? zipFilePath = result.files.single.path;
-      if (zipFilePath != null) {
-        File file = File(zipFilePath);
-        Directory? unpackedFiles = await _getFilesFromZip(file);
-        if (unpackedFiles != null) {
-          var data = await CvData.create(unpackedFiles);
-          setState(() {
-            _cvData = data;
-            items = data.getListOfData();
-            _showClear = true;
-          });
-        } else {
-          const snackBar = SnackBar(
-            content: Text('Finvalid file format'),
-          );
-
-          // Find the ScaffoldMessenger in the widget tree
-          // and use it to show a SnackBar.
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
+    if (zipFilePath != null) {
+      File file = File(zipFilePath);
+      Directory? unpackedFiles = await getFilesFromZip(file);
+      if (unpackedFiles != null) {
+        var data = await CvData.create(unpackedFiles);
+        setData(data);
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+              title: const Text("Warning!"),
+              content: const Text("Invalid file format"),
+              actions: [
+                ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK')),
+              ]),
+        );
       }
     }
-  }
-
-  Future<Directory?> _getFilesFromZip(File myZipData) async {
-    final destinationDir = Directory("${_appDataDir.path}/unzip");
-
-    if (destinationDir.existsSync()) {
-      destinationDir.deleteSync(recursive: true);
-    }
-
-    destinationDir.createSync();
-
-    try {
-      final bytes = myZipData.readAsBytesSync();
-      final archive = ZipDecoder().decodeBytes(bytes);
-
-      extractArchiveToDisk(archive, destinationDir.path);
-    } on FileSystemException catch (e, stacktrace) {
-      if (kDebugMode) {
-        print('Exception: $e');
-        print('Stacktrace: $stacktrace');
-      }
-      return null;
-    }
-    try {
-      return Directory(destinationDir
-          .listSync()
-          .firstWhere(
-            (element) => File("${element.path}/Profile.csv").existsSync(),
-            orElse: () =>
-                File("${destinationDir.path}/Profile.csv").existsSync()
-                    ? destinationDir
-                    : throw StateError("No element"),
-          )
-          .path);
-    } on StateError catch (e, stacktrace) {
-      if (kDebugMode) {
-        print('Exception: $e');
-        print('Stacktrace: $stacktrace');
-      }
-      return null;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Load data from zip file'),
-        leading: BackButton(
-          onPressed: () => Navigator.pop(context, _cvData),
-        ),
-      ),
-      body: Center(
-        child: ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return ListTile(
-              title: item.buildTitle(context),
-              subtitle: item.buildSubtitle(context),
-            );
-          },
-        ),
-      ),
-      floatingActionButton: _getFAB(context),
-    );
-  }
-
-  FloatingActionButton loadZipFileButton(context) {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        _pickZipDataFile(context);
-      },
-      icon: const Icon(Icons.file_open),
-      label: const Text('Open Zip File'),
-    );
-  }
-
-  Widget _getFAB(context) {
-    return SpeedDial(
-      animatedIcon: AnimatedIcons.menu_close,
-      backgroundColor: Theme.of(context).primaryColor,
-      animatedIconTheme: const IconThemeData(color: Colors.white),
-      visible: true,
-      curve: Curves.bounceIn,
-      children: [
-        SpeedDialChild(
-          foregroundColor: Colors.white,
-          backgroundColor: Theme.of(context).primaryColor,
-          labelStyle: const TextStyle(color: Colors.white),
-          labelBackgroundColor: Theme.of(context).primaryColor,
-          child: const Icon(Icons.file_open),
-          onTap: () {
-            _pickZipDataFile(context);
-          },
-          label: 'Open Zip File',
-        ),
-        // FAB 2
-        SpeedDialChild(
-          foregroundColor: Colors.white,
-          backgroundColor: Theme.of(context).primaryColor,
-          labelStyle: const TextStyle(color: Colors.white),
-          labelBackgroundColor: Theme.of(context).primaryColor,
-          child: const Icon(Icons.clear),
-          visible: _showClear,
-          onTap: () {
-            setState(() {
-              items = [];
-              _cvData = null;
-              _showClear = false;
-            });
-          },
-          label: 'Clear Data',
-        )
-      ],
-    );
   }
 }

@@ -201,17 +201,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     setData(result);
   }
 
-  Future<void> launchLoadingFromZip(BuildContext context) async {
-    Navigator.pop(context);
-    var cvData = getCurrentData();
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoadDataFromZip(cvData)),
-    ) as CvData?;
-
-    setData(result);
-  }
-
   Future<void> launchLoadingFromdatabase(BuildContext context) async {
     Navigator.pop(context);
 
@@ -245,11 +234,12 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   ListTile loadFromZipOrClear(BuildContext context) {
     return getCurrentData() == null
         ? ListTile(
-            enabled: true,
+            enabled: !kIsWeb,
             leading: const Icon(Icons.folder_zip),
             title: const Text("Load data from Zip"),
             onTap: () {
-              launchLoadingFromZip(context);
+              pickZipDataFile(context, setData);
+              Navigator.pop(context);
             },
           )
         : ListTile(
@@ -320,7 +310,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                  "Enter name under which, your CV will be saved on your account."),
+                  "Enter name under which, your CV will be saved on your account.\nAt least one charcter"),
               TextField(
                 decoration: const InputDecoration(
                   labelText: 'CV Name',
