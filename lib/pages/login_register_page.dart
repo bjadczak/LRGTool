@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _title() {
-    return const Text('Firebase Auth');
+    return const Text('Login');
   }
 
   Widget _entryField(

@@ -36,6 +36,22 @@ class _HomePageState extends State<HomePage> {
       drawer: NavigationDrawer(
           setNullData, setNewCvData, getCurrentCvData, setCvDataName),
       body: Center(
+        child: contentOfHomePage(),
+      ),
+    );
+  }
+
+  Widget contentOfHomePage() {
+    if (items.isNotEmpty) {
+      return Container(
+        margin: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).primaryColor,
+          ),
+          borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+        ),
         child: ListView.builder(
           itemCount: items.length,
           itemBuilder: (context, index) {
@@ -46,8 +62,13 @@ class _HomePageState extends State<HomePage> {
             );
           },
         ),
-      ),
-    );
+      );
+    } else {
+      return Text(
+        "No data to show",
+        style: Theme.of(context).textTheme.headline5,
+      );
+    }
   }
 
   void setNewCvData(CvData? newData) {

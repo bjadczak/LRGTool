@@ -23,7 +23,7 @@ class _EditDataState extends State<EditData> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CV Data'),
+        title: const Text('Edit Data'),
         leading: BackButton(
           onPressed: () => Navigator.pop(context, dataOnScreen),
         ),

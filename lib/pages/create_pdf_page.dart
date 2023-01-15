@@ -9,7 +9,7 @@ import 'package:printing/printing.dart';
 class CreatePDF extends StatelessWidget {
   const CreatePDF(this.data, {super.key});
 
-  final String title = "PDF Demo";
+  final String title = "Generate PDF";
   final CvData data;
 
   @override
