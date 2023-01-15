@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
       return Container(
         margin: const EdgeInsets.all(30.0),
         padding: const EdgeInsets.all(10.0),
+        constraints: const BoxConstraints(minWidth: 200, maxWidth: 500),
         decoration: BoxDecoration(
           border: Border.all(
             color: Theme.of(context).primaryColor,
