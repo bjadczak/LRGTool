@@ -245,7 +245,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   ListTile loadFromZipOrClear(BuildContext context) {
     return getCurrentData() == null
         ? ListTile(
-            enabled: !kIsWeb,
+            enabled: true,
             leading: const Icon(Icons.folder_zip),
             title: const Text("Load data from Zip"),
             onTap: () {
@@ -316,10 +316,21 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         var content = getCurrentData()?.nameOfCv ?? "";
         return AlertDialog(
           title: const Text("Upload CV"),
-          content: TextField(
-            maxLines: 1,
-            controller: TextEditingController(text: content),
-            onChanged: (value) => content = value,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                  "Enter name under which, your CV will be saved on your account."),
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'CV Name',
+                  hintText: 'Enter name of your CV',
+                ),
+                maxLines: 1,
+                controller: TextEditingController(text: content),
+                onChanged: (value) => content = value,
+              ),
+            ],
           ),
           actions: [
             ElevatedButton(
