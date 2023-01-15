@@ -351,12 +351,14 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                 return AlertDialog(
                   title: const Text("Warning!"),
                   content: Text(
-                      "You are trying to overwrite CV from ${potential.timeOfCreation}"),
+                      "You are trying to overwrite CV with the same name created on ${potential.formatedTimeOfCreation}"),
                   actions: [
                     ElevatedButton(
                         onPressed: () => Navigator.pop(context, false),
                         child: const Text('Cancel')),
                     ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red),
                         onPressed: () => Navigator.pop(context, true),
                         child: const Text('Yes, overwrite')),
                   ],

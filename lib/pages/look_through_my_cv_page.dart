@@ -47,15 +47,39 @@ class _LookThroughFetchedCVsState extends State<LookThroughFetchedCVs> {
             itemBuilder: (context, index) {
               final item = items[index];
               return ListTile(
-                title: Text("CV ${item.nameOfCv}"),
+                title: Text('CV "${item.nameOfCv}"'),
                 subtitle: Text("Created on ${item.formatedTimeOfCreation}"),
                 onTap: () => setState(() {
                   Navigator.pop(context, item);
                 }),
                 trailing: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   onPressed: () {
-                    removeItem(item);
-                    reloadData();
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text("Warning!"),
+                          content: Text(
+                              'You are trying to delete CV "${item.nameOfCv}"'),
+                          actions: [
+                            ElevatedButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Cancel')),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red),
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('Yes, delete')),
+                          ],
+                        );
+                      },
+                    ).then((value) {
+                      if (value) {
+                        removeItem(item);
+                        reloadData();
+                      }
+                    });
                   },
                   icon:
                       const Icon(Icons.delete), //icon data for elevated button
