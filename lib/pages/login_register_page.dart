@@ -23,59 +23,59 @@ class _LoginPageState extends State<LoginPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> signInWithEmailAndPassword() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await Auth().signInWithEmailAndPassword(
-          email: _controllerEmail.text,
-          password: _controllerPassword.text,
-        );
-      } on FirebaseAuthException catch (e) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Warning!"),
-              content: Text(e.message ??
-                  "Something went wrong, can't retrive error message"),
-              actions: [
-                ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('OK')),
-              ],
-            );
-          },
-        );
-      }
-    }
-  }
+  // Future<void> signInWithEmailAndPassword() async {
+  //   if (_formKey.currentState!.validate()) {
+  //     try {
+  //       await Auth().signInWithEmailAndPassword(
+  //         email: _controllerEmail.text,
+  //         password: _controllerPassword.text,
+  //       );
+  //     } on FirebaseAuthException catch (e) {
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) {
+  //           return AlertDialog(
+  //             title: const Text("Warning!"),
+  //             content: Text(e.message ??
+  //                 "Something went wrong, can't retrive error message"),
+  //             actions: [
+  //               ElevatedButton(
+  //                   onPressed: () => Navigator.pop(context),
+  //                   child: const Text('OK')),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     }
+  //   }
+  // }
 
-  Future<void> createUserWithEmailAndPassword() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await Auth().createUserWithEmailAndPassword(
-          email: _controllerEmail.text,
-          password: _controllerPassword.text,
-        );
-      } on FirebaseAuthException catch (e) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Warning!"),
-              content: Text(e.message ??
-                  "Something went wrong, can't retrive error message"),
-              actions: [
-                ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('OK')),
-              ],
-            );
-          },
-        );
-      }
-    }
-  }
+  // Future<void> createUserWithEmailAndPassword() async {
+  //   if (_formKey.currentState!.validate()) {
+  //     try {
+  //       await Auth().createUserWithEmailAndPassword(
+  //         email: _controllerEmail.text,
+  //         password: _controllerPassword.text,
+  //       );
+  //     } on FirebaseAuthException catch (e) {
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) {
+  //           return AlertDialog(
+  //             title: const Text("Warning!"),
+  //             content: Text(e.message ??
+  //                 "Something went wrong, can't retrive error message"),
+  //             actions: [
+  //               ElevatedButton(
+  //                   onPressed: () => Navigator.pop(context),
+  //                   child: const Text('OK')),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     }
+  //   }
+  // }
 
   Widget _passwordCreateEntryFiled() {
     return TextFormField(
@@ -166,9 +166,25 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       margin: const EdgeInsets.only(top: 15.0),
       child: ElevatedButton(
-        onPressed: isLogin
-            ? signInWithEmailAndPassword
-            : createUserWithEmailAndPassword,
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text("Warning!"),
+                  content: const Text(
+                      "For GH Pages, Firebase database and auth is turned off"),
+                  actions: [
+                    ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('OK')),
+                  ],
+                );
+              },
+            );
+          }
+        },
         child: Text(isLogin ? 'Login' : 'Register'),
       ),
     );

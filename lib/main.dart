@@ -9,10 +9,10 @@ import 'package:lrgtool/misc/widget_tree.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: "dotenv");
-  await Firebase.initializeApp(
-    name: dotenv.env['FIREBASE_NAME'] ?? "",
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   name: dotenv.env['FIREBASE_NAME'] ?? "",
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 
   runApp(const MyApp());
 }

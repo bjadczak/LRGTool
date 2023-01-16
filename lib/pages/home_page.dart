@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final User? user = Auth().currentUser;
+  final User? user = null /*Auth().currentUser*/;
   CvData? _cvData;
   List<ListItem> items = [];
 
@@ -159,35 +159,36 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
       ),
       color: Theme.of(context).primaryColor,
       child: Column(
-        children: Auth().currentUser != null
-            ? [
-                const Text(
-                  "Logged on as",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  Auth().currentUser?.email ?? "No user loged in",
-                  style: const TextStyle(
-                    color: Colors.white54,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ]
-            : [
-                const Text(
-                  "Offline mode",
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+        children: //Auth().currentUser != null
+            // ? [
+            //     const Text(
+            //       "Logged on as",
+            //       style: TextStyle(
+            //         color: Colors.white,
+            //         fontSize: 24,
+            //         fontWeight: FontWeight.bold,
+            //       ),
+            //     ),
+            //     Text(
+            //       Auth().currentUser?.email ?? "No user loged in",
+            //       style: const TextStyle(
+            //         color: Colors.white54,
+            //         fontSize: 20,
+            //         fontWeight: FontWeight.bold,
+            //       ),
+            //     ),
+            //   ]
+            // :
+            const [
+          Text(
+            "Offline mode",
+            style: TextStyle(
+              color: Colors.white54,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -203,16 +204,16 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     setData(result);
   }
 
-  Future<void> launchLoadingFromdatabase(BuildContext context) async {
-    Navigator.pop(context);
+  // Future<void> launchLoadingFromdatabase(BuildContext context) async {
+  //   Navigator.pop(context);
 
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const LookThroughFetchedCVs()),
-    ) as CvData?;
+  //   final result = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => const LookThroughFetchedCVs()),
+  //   ) as CvData?;
 
-    if (result != null) setData(result);
-  }
+  //   if (result != null) setData(result);
+  // }
 
   Future<void> launchCreatePdfScreen(BuildContext context) async {
     Navigator.pop(context);
@@ -224,13 +225,13 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   }
 
   Future<void> signOut(BuildContext context) async {
-    if (Auth().currentUser != null) {
-      Navigator.pop(context);
-      await Auth().signOut();
-    } else {
-      Navigator.pop(context);
-      Navigator.popUntil(context, (route) => route.isFirst);
-    }
+    // if (Auth().currentUser != null) {
+    //   Navigator.pop(context);
+    //   await Auth().signOut();
+    // } else {
+    Navigator.pop(context);
+    Navigator.popUntil(context, (route) => route.isFirst);
+    // }
   }
 
   ListTile loadFromZipOrClear(BuildContext context) {
@@ -300,18 +301,18 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           const Divider(
             color: Colors.black54,
           ),
-          ListTile(
-            enabled: Auth().currentUser != null,
-            leading: const Icon(Icons.upload),
-            title: const Text("Upload current CV"),
-            onTap: () =>
-                {showUploadDilog(context, getCurrentData, setCvDataName)},
+          const ListTile(
+            enabled: false,
+            leading: Icon(Icons.upload),
+            title: Text("Upload current CV"),
+            // onTap: () =>
+            //     {showUploadDilog(context, getCurrentData, setCvDataName)},
           ),
-          ListTile(
-            enabled: Auth().currentUser != null,
-            leading: const Icon(Icons.download),
-            title: const Text("Download CVs from database"),
-            onTap: () => {launchLoadingFromdatabase(context)},
+          const ListTile(
+            enabled: false,
+            leading: Icon(Icons.download),
+            title: Text("Download CVs from database"),
+            // onTap: () => {launchLoadingFromdatabase(context)},
           ),
           const Divider(
             color: Colors.black54,
@@ -326,103 +327,103 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     );
   }
 
-  Future<void> showUploadDilog(BuildContext context,
-      CvData? Function() getCurrentData, void Function(String) setCvDataName) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        var content = getCurrentData()?.nameOfCv ?? "";
-        return AlertDialog(
-          title: const Text("Upload CV"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                  "Enter name under which, your CV will be saved on your account.\nAt least one charcter"),
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'CV Name',
-                  hintText: 'Enter name of your CV',
-                ),
-                maxLines: 1,
-                controller: TextEditingController(text: content),
-                onChanged: (value) => content = value,
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel')),
-            ElevatedButton(
-                onPressed: () {
-                  if (content.isNotEmpty) {
-                    Navigator.pop(context, content);
-                  } else {}
-                },
-                child: const Text('Confirm')),
-          ],
-        );
-      },
-    ).then(
-      (valueFromDialog) async {
-        if (valueFromDialog != null) {
-          CvData potential = await DatabaseHandler()
-              .findWithName(Auth().currentUser?.uid ?? "", valueFromDialog);
-          if (!mounted) return;
-          if (potential.isEmpty) {
-            sendCvToDatabase(
-                context, valueFromDialog, getCurrentData, setCvDataName);
-          } else {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text("Warning!"),
-                  content: Text(
-                      "You are trying to overwrite CV with the same name created on ${potential.formatedTimeOfCreation}"),
-                  actions: [
-                    ElevatedButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        child: const Text('Cancel')),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red),
-                        onPressed: () => Navigator.pop(context, true),
-                        child: const Text('Yes, overwrite')),
-                  ],
-                );
-              },
-            ).then((value) {
-              if (value) {
-                sendCvToDatabase(
-                    context, valueFromDialog, getCurrentData, setCvDataName);
-              }
-            });
-          }
-        }
-      },
-    );
-  }
+  // Future<void> showUploadDilog(BuildContext context,
+  //     CvData? Function() getCurrentData, void Function(String) setCvDataName) {
+  //   return showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       var content = getCurrentData()?.nameOfCv ?? "";
+  //       return AlertDialog(
+  //         title: const Text("Upload CV"),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             const Text(
+  //                 "Enter name under which, your CV will be saved on your account.\nAt least one charcter"),
+  //             TextField(
+  //               decoration: const InputDecoration(
+  //                 labelText: 'CV Name',
+  //                 hintText: 'Enter name of your CV',
+  //               ),
+  //               maxLines: 1,
+  //               controller: TextEditingController(text: content),
+  //               onChanged: (value) => content = value,
+  //             ),
+  //           ],
+  //         ),
+  //         actions: [
+  //           ElevatedButton(
+  //               onPressed: () => Navigator.pop(context),
+  //               child: const Text('Cancel')),
+  //           ElevatedButton(
+  //               onPressed: () {
+  //                 if (content.isNotEmpty) {
+  //                   Navigator.pop(context, content);
+  //                 } else {}
+  //               },
+  //               child: const Text('Confirm')),
+  //         ],
+  //       );
+  //     },
+  //   ).then(
+  //     (valueFromDialog) async {
+  //       if (valueFromDialog != null) {
+  //         CvData potential = await DatabaseHandler()
+  //             .findWithName(Auth().currentUser?.uid ?? "", valueFromDialog);
+  //         if (!mounted) return;
+  //         if (potential.isEmpty) {
+  //           sendCvToDatabase(
+  //               context, valueFromDialog, getCurrentData, setCvDataName);
+  //         } else {
+  //           showDialog(
+  //             context: context,
+  //             builder: (context) {
+  //               return AlertDialog(
+  //                 title: const Text("Warning!"),
+  //                 content: Text(
+  //                     "You are trying to overwrite CV with the same name created on ${potential.formatedTimeOfCreation}"),
+  //                 actions: [
+  //                   ElevatedButton(
+  //                       onPressed: () => Navigator.pop(context, false),
+  //                       child: const Text('Cancel')),
+  //                   ElevatedButton(
+  //                       style: ElevatedButton.styleFrom(
+  //                           backgroundColor: Colors.red),
+  //                       onPressed: () => Navigator.pop(context, true),
+  //                       child: const Text('Yes, overwrite')),
+  //                 ],
+  //               );
+  //             },
+  //           ).then((value) {
+  //             if (value) {
+  //               sendCvToDatabase(
+  //                   context, valueFromDialog, getCurrentData, setCvDataName);
+  //             }
+  //           });
+  //         }
+  //       }
+  //     },
+  //   );
+  // }
 
-  void sendCvToDatabase(BuildContext context, valueFromDialog,
-      CvData? Function() getCurrentData, void Function(String) setCvDataName) {
-    if (getCurrentData() == null) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-            title: const Text("Warning!"),
-            content: const Text("Can't upload empty CV, first add data."),
-            actions: [
-              ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK')),
-            ]),
-      );
-    } else {
-      setCvDataName(valueFromDialog);
-      DatabaseHandler().createUser(
-          Auth().currentUser?.uid ?? "", getCurrentData() ?? CvData.empty());
-    }
-  }
+  // void sendCvToDatabase(BuildContext context, valueFromDialog,
+  //     CvData? Function() getCurrentData, void Function(String) setCvDataName) {
+  //   if (getCurrentData() == null) {
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //           title: const Text("Warning!"),
+  //           content: const Text("Can't upload empty CV, first add data."),
+  //           actions: [
+  //             ElevatedButton(
+  //                 onPressed: () => Navigator.pop(context),
+  //                 child: const Text('OK')),
+  //           ]),
+  //     );
+  //   } else {
+  //     setCvDataName(valueFromDialog);
+  //     DatabaseHandler().createUser(
+  //         Auth().currentUser?.uid ?? "", getCurrentData() ?? CvData.empty());
+  //   }
+  // }
 }
