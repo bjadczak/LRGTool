@@ -175,7 +175,7 @@ class CreatePDF extends StatelessWidget {
                                 builder: (context) {
                                   String text = "";
                                   for (int i = 0;
-                                      i < data.skills.length && i < 5;
+                                      i < data.skills.length && i < 10;
                                       i++) {
                                     var skill = data.skills[i];
                                     text += "• ";

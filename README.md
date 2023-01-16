@@ -1,6 +1,6 @@
 # LRG - LinkedIn Resume Generation Tool
 
-This application lets users generate PDF of Their CV. User can input data manually throug screens or They can select their LinkedIn .zip archive of their profile. After taht one can generate pdf of their CV and save it or share it how the like. There is also possiblity to create profile and send CV to datebase from wich it can be reterived later or on diffrent device.
+This application lets users generate PDF of Their CV. User can input data manually throug screens or They can select their LinkedIn .zip archive of their profile. After taht one can generate pdf of their CV and save it or share it how the like. There is also possiblity to create profile and send CV to datebase from wich it can be reterived later or on diffrent device. Noteworthy information is that, to limit clutter, only 5 first schools, positions and 10 first skills will be taken into PDF, but all of data will be saved in database.
 
 This application works with on:
 - iOS
