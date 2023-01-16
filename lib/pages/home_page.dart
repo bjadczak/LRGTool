@@ -5,7 +5,7 @@ import 'package:lrgtool/pages/create_pdf_page.dart';
 import 'package:lrgtool/misc/database_handler.dart';
 import 'package:lrgtool/pages/look_through_my_cv_page.dart';
 
-import 'load_data_from_cv_page.dart';
+import '../misc/load_data_from_cv.dart';
 import 'edit_data_page.dart';
 import 'package:lrgtool/misc/linkedin_data_structs.dart';
 

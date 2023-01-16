@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'dart:io';
 
-import '../misc/linkedin_data_structs.dart';
+import 'linkedin_data_structs.dart';
 
 Future<Directory?> getFilesFromZip(File myZipData) async {
   final appDataDir = Directory.systemTemp;
