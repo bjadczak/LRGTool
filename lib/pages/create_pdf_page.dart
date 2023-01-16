@@ -127,11 +127,15 @@ class CreatePDF extends StatelessWidget {
                               child: pw.Builder(
                                 builder: (context) {
                                   String text = "";
-                                  for (var eduData in data.education) {
+                                  for (int i = 0;
+                                      i < data.education.length && i < 5;
+                                      i++) {
+                                    var eduData = data.education[i];
                                     text += "• ";
                                     text +=
                                         "${eduData.schoolName}\n${eduData.degree} ${eduData.degree.isNotEmpty && eduData.course.isNotEmpty ? "|" : ""} ${eduData.course}${eduData.startedOn == null ? "" : "\n${eduData.startedOn?.year}-${eduData.finishedOn?.year.toString() ?? ""}"}\n";
                                   }
+
                                   return pw.Text(
                                     text,
                                     style:
@@ -170,7 +174,10 @@ class CreatePDF extends StatelessWidget {
                               child: pw.Builder(
                                 builder: (context) {
                                   String text = "";
-                                  for (var skill in data.skills) {
+                                  for (int i = 0;
+                                      i < data.skills.length && i < 5;
+                                      i++) {
+                                    var skill = data.skills[i];
                                     text += "• ";
                                     text += "${skill.skill}\n";
                                   }
@@ -203,7 +210,10 @@ class CreatePDF extends StatelessWidget {
                               child: pw.Builder(
                                 builder: (context) {
                                   String text = "";
-                                  for (var posData in data.positions) {
+                                  for (int i = 0;
+                                      i < data.positions.length && i < 5;
+                                      i++) {
+                                    var posData = data.positions[i];
                                     text += "• ";
                                     text +=
                                         "${posData.companyName} - ${posData.title}\n${posData.description}${posData.startedOn == null ? "" : "\n${posData.startedOn?.year}-${posData.finishedOn?.year.toString() ?? ""}"}\n";

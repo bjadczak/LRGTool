@@ -55,7 +55,6 @@ Possibility of saving CV to database nessesitates a need to configure datebase. 
 | User | Log in |
 | User | Create CV using LinkedIn profile data |
 | User | Look through fetched data and edit indivitual entries |
-| User | Pick what data will be in CV and what will be omited |
 | User | Turn off app without losing manually inputed and fetched data |
 | User | Save CV to PDF |
 | User | Upload my CV to datebase |
