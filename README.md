@@ -37,12 +37,16 @@ Possibility of saving CV to database nessesitates a need to configure datebase. 
 - [email_validator](https://pub.dev/packages/email_validator)
 ## Screens
 * Log in screen - Where we can log in or register
-
+<img width="473" alt="Login_Page" src="https://user-images.githubusercontent.com/73365815/212686591-ea7e0fc0-8c52-496f-840e-bea5bc394ab1.png">
 * Home screen - Where we can see preview of CV
-
+<p float="left">
+<img width="466" alt="Home_screen_1" src="https://user-images.githubusercontent.com/73365815/212686665-9f32db35-91ad-4b7f-89d1-2faf5a9e9d54.png">
+<img width="464" alt="Home_screen_2" src="https://user-images.githubusercontent.com/73365815/212686700-77f201d2-31b1-4e56-bed0-5486db59be33.png">
+</p>
 * Data field screen - Where we can edit data
-
+<img width="467" alt="Data_field_screen" src="https://user-images.githubusercontent.com/73365815/212686864-29f90a1e-dce5-4b5f-8998-f7e1a11f0626.png">
 * PDF generation screen - Where we can save or share generated PDF of CV
+<img width="466" alt="PDF_gen_screen" src="https://user-images.githubusercontent.com/73365815/212686958-d6df4eb5-3db4-4ce4-ae08-b640f2af3d0c.png">
 
 ## User stories
 
