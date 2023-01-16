@@ -11,6 +11,8 @@ import 'package:lrgtool/misc/linkedin_data_structs.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import 'package:flutter/services.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -232,6 +234,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   }
 
   ListTile loadFromZipOrClear(BuildContext context) {
+    const url = "https://www.linkedin.com/settings/data-export-page";
     return getCurrentData() == null
         ? ListTile(
             enabled: !kIsWeb,
@@ -240,6 +243,31 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             onTap: () {
               pickZipDataFile(context, setData);
               Navigator.pop(context);
+            },
+            onLongPress: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("How to?"),
+                    content: const Text(
+                        "You can load Your LinkedIn profile to this application. To do this, you need to head to LinkedIn Data Export Page and request Your compleat archive."),
+                    actions: [
+                      ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel')),
+                      ElevatedButton(
+                          onPressed: () async {
+                            await Clipboard.setData(
+                                const ClipboardData(text: url));
+                            if (!mounted) return;
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Copy link to clipboard')),
+                    ],
+                  );
+                },
+              );
             },
           )
         : ListTile(
